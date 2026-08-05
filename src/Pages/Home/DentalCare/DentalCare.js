@@ -1,28 +1,46 @@
 import React from 'react';
-import Box from '@mui/material/Box';
-import Grid from '@mui/material/Grid';
+import { Link } from 'react-router-dom';
 import treatment from '../../../images/treatment.png';
-import { Button, Container, Typography } from '@mui/material';
+import { IconArrow } from '../../Shared/Icons/Icons';
 
-const DentalCare = () => {
-    return (
-        <Container sx={{ flexGrow: 1, m:5 }}>
-      <Grid container spacing={2}>
-    <Grid item xs={12 } md={6}>
-            <img style={{width:'300px'}} src={treatment} alt="" />
-        </Grid>
-        <Grid item xs={12} md={6} style={{textAlign:'left'}}>
-         <Typography variant="h4">
-             Exceptional Dental <br /> Care,on Your Terms
-         </Typography>
-         <Typography variant="caption" display="block" color="text.secondary">
-         Lorem ipsum dolor sit amet consectetur, adipisicing elit. Quasi consequuntur libero voluptatibus asperiores ea doloremque accusamus inventore ipsam rem. Repudiandae reiciendis, qui beatae harum est aut sunt commodi at dolorum sequi, quis, delectus quas doloremque molestiae aperiam repellendus praesentium excepturi.
-        </Typography>
-        <Button variant="contained" style={{backgroundColor:'#5CE7ED'}}>Learn More</Button>
-        </Grid>
-      </Grid>
-      </Container>
-    );
-};
+const points = [
+  'Same dentist from first consult to final check-up',
+  'Digital X-rays and a written treatment plan before anything starts',
+  'Evening and weekend slots for people who work office hours',
+  'Transparent, itemised pricing — no surprises at the counter',
+];
+
+const DentalCare = () => (
+  <section className="dp-section alt" id="about">
+    <div className="dp-wrap dp-grid-2">
+      <div className="dp-feature-img dp-reveal">
+        <img src={treatment} alt="Dentist treating a patient" />
+      </div>
+
+      <div className="dp-reveal dp-d1">
+        <span className="dp-eyebrow">Why patients stay</span>
+        <h2 className="dp-h2">Exceptional dental care, on your terms</h2>
+        <p className="dp-sub">
+          Most people put off the dentist because the process is opaque and the
+          waiting room eats a whole afternoon. We rebuilt the clinic around
+          scheduled slots, so you know exactly what is happening and when.
+        </p>
+
+        <ul className="dp-ticks">
+          {points.map((point) => (
+            <li key={point}>
+              <span className="dp-tick">✓</span>
+              {point}
+            </li>
+          ))}
+        </ul>
+
+        <Link to="/appointment" className="dp-btn dp-btn-primary">
+          Find a slot <IconArrow size={18} />
+        </Link>
+      </div>
+    </div>
+  </section>
+);
 
 export default DentalCare;

@@ -1,161 +1,145 @@
-import * as React from 'react';
-import PropTypes from 'prop-types';
-import AppBar from '@mui/material/AppBar';
-import Box from '@mui/material/Box';
-import CssBaseline from '@mui/material/CssBaseline';
-import Divider from '@mui/material/Divider';
-import Drawer from '@mui/material/Drawer';
-import IconButton from '@mui/material/IconButton';
-import InboxIcon from '@mui/icons-material/MoveToInbox';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import MailIcon from '@mui/icons-material/Mail';
-import MenuIcon from '@mui/icons-material/Menu';
-import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
-import {
-  BrowserRouter as Router,
-  Switch,
-  Route,
-  Link,
-  useParams,
-  useRouteMatch
-} from "react-router-dom";
-import { Button } from '@mui/material';
+import React, { createContext, useEffect, useState } from 'react';
+import { Link, NavLink, Route, Switch, useLocation, useRouteMatch } from 'react-router-dom';
+
 import DashBoardHome from './../DashBoardHome/DashBoardHome';
+import Appointments from '../Appointments/Appointments';
+import Doctors from '../Doctors/Doctors';
 import MakeAdmin from './../MakeAdmin/MakeAdmin';
 import AddDoctor from './AddDoctor/AddDoctor';
-import useAuth from '../../../hooks/useAuth';
 import AdminRoute from '../../Login/AdminRoute/AdminRoute';
-const drawerWidth = 200;
+import useAuth from '../../../hooks/useAuth';
+import useClinicData from '../../../hooks/useClinicData';
+import {
+  IconGrid, IconCalendar, IconStethoscope, IconShieldUser, IconPlus,
+  IconSearch, IconMenu, IconTooth, IconLogout, IconArrow,
+} from '../../Shared/Icons/Icons';
 
-function Dashboard(props) {
-  const { window } = props;
-  const [mobileOpen, setMobileOpen] = React.useState(false);
-  let { path, url } = useRouteMatch();
-  const {admin} = useAuth();
-  const handleDrawerToggle = () => {
-    setMobileOpen(!mobileOpen);
-  };
+export const ClinicContext = createContext({ appointments: [], doctors: [], users: [], loading: true, reload: () => {}, search: '' });
 
-  const drawer = (
-    <div>
-      <Toolbar />
-      <Divider />
-      <Link
-           to="/appointment">
-          <Button color="inherit">Appointment</Button>
-          </Link>
-      <Link to={`${url}`}>
-          <Button color="inherit">Dashboard</Button>
-          </Link>
-     {admin && <Box>
-      <Link to={`${url}/makeAdmin`}>
-          <Button color="inherit">Make Admin</Button>
-      </Link>
-      <Link to={`${url}/addDoctor`}>
-          <Button color="inherit">Add Doctor</Button>
-      </Link>
-     </Box>
-     }
-      <List>
-        {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
-          <ListItem button key={text}>
-            <ListItemIcon>
-              {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-            </ListItemIcon>
-            <ListItemText primary={text} />
-          </ListItem>
-        ))}
-      </List>
-      
-    </div>
-  );
+const initialsOf = (user) => {
+  const source = user?.displayName || user?.email || '';
+  const parts = source.replace(/@.*/, '').split(/[.\s_-]+/).filter(Boolean);
+  return (parts.slice(0, 2).map((p) => p[0]).join('') || 'U').toUpperCase();
+};
 
-  const container = window !== undefined ? () => window().document.body : undefined;
+function Dashboard() {
+  const { path, url } = useRouteMatch();
+  const location = useLocation();
+  const { user, admin, logOut, demoMode } = useAuth();
+  const clinic = useClinicData();
+
+  const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState('');
+
+  // close the mobile drawer whenever the route changes
+  useEffect(() => { setOpen(false); }, [location.pathname]);
+
+  const links = [
+    { to: url, exact: true, label: 'Overview', icon: <IconGrid size={19} /> },
+    { to: `${url}/appointments`, label: 'Appointments', icon: <IconCalendar size={19} /> },
+    { to: `${url}/doctors`, label: 'Doctors', icon: <IconStethoscope size={19} /> },
+  ];
+  const adminLinks = [
+    { to: `${url}/makeAdmin`, label: 'Make admin', icon: <IconShieldUser size={19} /> },
+    { to: `${url}/addDoctor`, label: 'Add doctor', icon: <IconPlus size={19} /> },
+  ];
 
   return (
-    <Box sx={{ display: 'flex' }}>
-      <CssBaseline />
-      <AppBar
-        position="fixed"
-        sx={{
-          width: { sm: `calc(100% - ${drawerWidth}px)` },
-          ml: { sm: `${drawerWidth}px` },
-        }}
-      >
-        <Toolbar>
-          <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            edge="start"
-            onClick={handleDrawerToggle}
-            sx={{ mr: 2, display: { sm: 'none' } }}
-          >
-            <MenuIcon />
-          </IconButton>
-          <Typography variant="h6" noWrap component="div">
-            Dashboard
-          </Typography>
-        </Toolbar>
-      </AppBar>
-      <Box
-        component="nav"
-        sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
-        aria-label="mailbox folders"
-      >
-        <Drawer
-          container={container}
-          variant="temporary"
-          open={mobileOpen}
-          onClose={handleDrawerToggle}
-          ModalProps={{
-            keepMounted: true, // Better open performance on mobile.
-          }}
-          sx={{
-            display: { xs: 'block', sm: 'none' },
-            '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
-          }}
-        >
-          {drawer}
-        </Drawer>
-        <Drawer
-          variant="permanent"
-          sx={{
-            display: { xs: 'none', sm: 'block' },
-            '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
-          }}
-          open
-        >
-          {drawer}
-        </Drawer>
-      </Box>
-      <Box
-        component="main"
-        sx={{ flexGrow: 1, p: 3, width: { sm: `calc(100% - ${drawerWidth}px)` } }}
-      >
-        <Toolbar />
-        <Switch>
-        <Route exact path={path}>
-         <DashBoardHome></DashBoardHome>
-        </Route>
-        <AdminRoute path={`${path}/makeAdmin`}>
-          <MakeAdmin></MakeAdmin>
-        </AdminRoute>
-        <AdminRoute path={`${path}/addDoctor`}>
-          <AddDoctor></AddDoctor>
-        </AdminRoute>
-      </Switch>
-      </Box>
-    </Box>
+    <ClinicContext.Provider value={{ ...clinic, search }}>
+      <div className="dash">
+        {open && <div className="dash-scrim" onClick={() => setOpen(false)} />}
+
+        <aside className={`dash-side${open ? ' open' : ''}`}>
+          <Link to="/" className="brand">
+            <span className="dp-logo"><IconTooth size={21} /></span>
+            <span className="nm">
+              Doctors Portal
+              <small>Clinic console</small>
+            </span>
+          </Link>
+
+          <nav className="dash-nav">
+            <div className="sec">Clinic</div>
+            {links.map((l) => (
+              <NavLink key={l.label} to={l.to} exact={l.exact} className="dash-link" activeClassName="active">
+                {l.icon}{l.label}
+              </NavLink>
+            ))}
+
+            {admin && (
+              <>
+                <div className="sec">Administration</div>
+                {adminLinks.map((l) => (
+                  <NavLink key={l.label} to={l.to} className="dash-link" activeClassName="active">
+                    {l.icon}{l.label}
+                  </NavLink>
+                ))}
+              </>
+            )}
+
+            <div className="sec">Public site</div>
+            <Link to="/appointment" className="dash-link"><IconArrow size={19} />Book a slot</Link>
+            <button type="button" className="dash-link" onClick={logOut} style={{ background: 'none', border: 'none', width: '100%', textAlign: 'left', cursor: 'pointer', font: 'inherit' }}>
+              <IconLogout size={19} />Log out
+            </button>
+          </nav>
+
+          <div className="dash-side-foot">
+            <div className="dash-side-card">
+              <b>{demoMode ? 'Demo dataset' : 'Live clinic'}</b>
+              {demoMode
+                ? 'Sample data ships with the app and every booking you make is saved in this browser.'
+                : 'Connected to the clinic API.'}
+            </div>
+          </div>
+        </aside>
+
+        <div className="dash-main">
+          <header className="dash-top">
+            <button type="button" className="dash-burger" aria-label="Open menu" onClick={() => setOpen(true)}>
+              <IconMenu size={20} />
+            </button>
+
+            <div className="dash-search">
+              <IconSearch size={17} />
+              <input
+                type="search"
+                placeholder="Search patients, services or doctors…"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                aria-label="Search the clinic"
+              />
+            </div>
+
+            <div className="dash-top-right">
+              {demoMode && (
+                <span className="dash-pill" title="Demo mode — running on bundled sample data, no backend required">
+                  <i className="dot" /><span>Demo mode</span>
+                </span>
+              )}
+              <div className="dash-user">
+                <div className="meta">
+                  <div className="nm">{user?.displayName || 'Clinic user'}</div>
+                  <div className="em">{admin ? 'Administrator' : 'Patient'}</div>
+                </div>
+                <span className="dp-avatar" title={user?.email}>{initialsOf(user)}</span>
+              </div>
+            </div>
+          </header>
+
+          <div className="dash-body">
+            <Switch>
+              <Route exact path={path}><DashBoardHome /></Route>
+              <Route path={`${path}/appointments`}><Appointments /></Route>
+              <Route path={`${path}/doctors`}><Doctors /></Route>
+              <AdminRoute path={`${path}/makeAdmin`}><MakeAdmin /></AdminRoute>
+              <AdminRoute path={`${path}/addDoctor`}><AddDoctor /></AdminRoute>
+            </Switch>
+          </div>
+        </div>
+      </div>
+    </ClinicContext.Provider>
   );
 }
-
-Dashboard.propTypes = {
-  
-  window: PropTypes.func,
-};
 
 export default Dashboard;

@@ -1,42 +1,27 @@
-import { Button, Grid } from '@mui/material';
 import React from 'react';
-import Paper from '@mui/material/Paper';
-import Typography from '@mui/material/Typography';
-import BookingModal from '../BookingModal/BookingModal';
+import { IconClock } from '../../Shared/Icons/Icons';
 
+const Booking = ({ booking, onBook }) => {
+  const { name, time, space } = booking;
 
-const Booking = ({booking, date,setBookingSuccess}) => {
-    const {name, time, space} = booking;
-    const [openBooking, setOpenBooking] = React.useState(false);
-    const handleBookingOpen = () => setOpenBooking(true);
-    const handleBookingClose = () => setOpenBooking(false);
-
-    return (
-        <>
-        <Grid item xs={12} sm={6} md={4}>
-        <Paper elevation={3} sx={{py:5}}>
-        <Typography sx={{color:'info.main', fontWeight:600}} variant="h5" gutterBottom component="div">
-        {name}
-        </Typography> 
-        <Typography variant="h6" gutterBottom component="div">
+  return (
+    <article className="dp-slot">
+      <h3>{name}</h3>
+      <div className="time" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7 }}>
+        <IconClock size={15} />
         {time}
-      </Typography>    
-      <Typography variant="caption" display="block" gutterBottom>
-        {space} Spaces Available
-      </Typography>
-       <Button onClick={handleBookingOpen} variant="contained">BOOK APPOINTMENT</Button>
-        </Paper> 
-        </Grid>
-        <BookingModal
-        booking = {booking}
-        openBooking={openBooking}
-        date={date}
-        handleBookingClose={handleBookingClose}
-        setBookingSuccess={setBookingSuccess}
-        >
-        </BookingModal>
-        </>
-    );
+      </div>
+      <div className="space">{space} space{space === 1 ? '' : 's'} available</div>
+      <button
+        type="button"
+        className="dp-btn dp-btn-primary"
+        onClick={() => onBook(booking)}
+        disabled={space === 0}
+      >
+        {space === 0 ? 'Fully booked' : 'Book appointment'}
+      </button>
+    </article>
+  );
 };
 
 export default Booking;

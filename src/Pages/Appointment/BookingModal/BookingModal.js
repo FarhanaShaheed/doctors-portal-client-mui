@@ -1,133 +1,93 @@
-import React, { useState } from 'react';
-import Backdrop from '@mui/material/Backdrop';
-import Box from '@mui/material/Box';
-import Modal from '@mui/material/Modal';
-import Fade from '@mui/material/Fade';
-import Typography from '@mui/material/Typography';
-import TextField from '@mui/material/TextField';
-import  Button  from '@mui/material/Button';
+import React, { useState, useEffect } from 'react';
 import useAuth from './../../../hooks/useAuth';
+import { createAppointment, dateKey, prettyDate } from '../../../api/demoApi';
+import { IconCheck } from '../../Shared/Icons/Icons';
 
+const BookingModal = ({ booking, date, onClose, onBooked }) => {
+  const { user } = useAuth();
+  const [info, setInfo] = useState({
+    patientName: user?.displayName || '',
+    email: user?.email || '',
+    phone: '',
+  });
+  const [saving, setSaving] = useState(false);
 
-const style = {
-  position: 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  width: 400,
-  bgcolor: 'background.paper',
-  border: '2px solid #000',
-  boxShadow: 24,
-  p: 4,
-};
+  useEffect(() => {
+    const onKey = (e) => { if (e.key === 'Escape') onClose(); };
+    document.addEventListener('keydown', onKey);
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.removeEventListener('keydown', onKey);
+      document.body.style.overflow = '';
+    };
+  }, [onClose]);
 
-const BookingModal = ({openBooking,handleBookingClose,booking,date,setBookingSuccess}) => {
-    const{name,time} = booking;
-    const{user}= useAuth();
-    const initialInfo = {patientName:user.displayName,email:user.email, phone:''}
+  if (!booking) return null;
 
-    const [bookingInfo, setBookingInfo] = useState(initialInfo);
+  const change = (e) => setInfo({ ...info, [e.target.name]: e.target.value });
 
-    const handleOnBlur = e =>{
-        const field = e.target.name;
-        const value = e.target.value;
-        const newInfo = {...bookingInfo};
-        newInfo[field] = value;
-        setBookingInfo(newInfo);
-    }
-
-    const handleBookSubmit = e =>{
-        //collect data
-         const appointment = {
-          ...bookingInfo,
-          time,
-          serviceName : name,
-          date: date.toLocaleDateString() 
-        }
-        //send to the server
-        fetch('https://morning-cliffs-43827.herokuapp.com/appointments',{
-          method: 'POST',
-          headers: {
-            'content-type': 'application/json'
-          },
-          body: JSON.stringify(appointment)
-        })
-        .then(res => res.json())
-        .then(data => {
-            if(data.insertedId){
-              setBookingSuccess(true);
-              handleBookingClose();
-
-            }
-        })
-
-        e.preventDefault();
-    }
-
-    return (
-        <Modal
-        aria-labelledby="transition-modal-title"
-        aria-describedby="transition-modal-description"
-        open={openBooking}
-        onClose={handleBookingClose}
-        closeAfterTransition
-        BackdropComponent={Backdrop}
-        BackdropProps={{
-          timeout: 500,
-        }}
-      >
-        <Fade in={openBooking}>
-          <Box sx={style}>
-            <Typography id="transition-modal-title" variant="h6" component="h2">
-              {name}
-            </Typography>
-            <form onSubmit={handleBookSubmit}>
-            <TextField
-            disabled
-            sx={{width:'90%', m:1}}
-            id="filled-hidden-label-small"
-            defaultValue={time}
-            size="small"
-            />
-            <TextField
-            
-            sx={{width:'90%', m:1}}
-            id="filled-hidden-label-small"
-            name="patientName"
-            onBlur={handleOnBlur}
-            defaultValue={user.displayName}
-            size="small"
-            />
-            <TextField
-            sx={{width:'90%', m:1}}
-            id="filled-hidden-label-small"
-            name="phone"
-            onBlur={handleOnBlur}
-            defaultValue="Phone Number"
-            size="small"
-            />
-            <TextField
-            sx={{width:'90%', m:1}}
-            id="filled-hidden-label-small"
-            name="email"      
-            onBlur={handleOnBlur}
-            defaultValue={user.email}
-            size="small"
-            />
-            <TextField
-            disabled
-            sx={{width:'90%', m:1}}
-            id="filled-hidden-label-small"
-            defaultValue={date.toDateString()}
-            size="small"
-            />
-            <Button type="submit" variant="contained">Submit
-            </Button>
-            </form>
-          </Box>
-        </Fade>
-      </Modal>
-    );
+  const submit = async (e) => {
+    e.preventDefault();
+    setSaving(true);
+    const appointment = {
+      ...info,
+      time: booking.time,
+      serviceName: booking.name,
+      doctor: booking.doctor,
+      date: date.toLocaleDateString(),
+      dateKey: dateKey(date),
+    };
+    const result = await createAppointment(appointment);
+    setSaving(false);
+    onBooked(result.appointment);
   };
+
+  return (
+    <div className="dp-modal-back" role="dialog" aria-modal="true" aria-label={`Book ${booking.name}`} onMouseDown={(e) => e.target === e.currentTarget && onClose()}>
+      <div className="dp-modal">
+        <div className="dp-modal-head">
+          <div>
+            <h3>{booking.name}</h3>
+            <div className="sub">{booking.time} · {prettyDate(date)}</div>
+          </div>
+          <button type="button" className="dp-x" aria-label="Close" onClick={onClose}>✕</button>
+        </div>
+
+        <form className="dp-modal-body" onSubmit={submit}>
+          <div className="dp-field">
+            <label htmlFor="b-name">Patient name</label>
+            <input id="b-name" className="dp-input" name="patientName" required value={info.patientName} onChange={change} placeholder="Full name" />
+          </div>
+
+          <div className="dp-two">
+            <div className="dp-field">
+              <label htmlFor="b-email">Email</label>
+              <input id="b-email" className="dp-input" name="email" type="email" required value={info.email} onChange={change} placeholder="you@example.com" />
+            </div>
+            <div className="dp-field">
+              <label htmlFor="b-phone">Phone</label>
+              <input id="b-phone" className="dp-input" name="phone" required value={info.phone} onChange={change} placeholder="+880 1XXX XXXXXX" />
+            </div>
+          </div>
+
+          <div className="dp-two">
+            <div className="dp-field">
+              <label htmlFor="b-slot">Slot</label>
+              <input id="b-slot" className="dp-input" value={booking.time} disabled readOnly />
+            </div>
+            <div className="dp-field">
+              <label htmlFor="b-date">Date</label>
+              <input id="b-date" className="dp-input" value={prettyDate(date)} disabled readOnly />
+            </div>
+          </div>
+
+          <button type="submit" className="dp-btn dp-btn-primary dp-btn-block" disabled={saving} style={{ marginTop: 8 }}>
+            {saving ? 'Confirming…' : <>Confirm appointment <IconCheck size={17} /></>}
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+};
 
 export default BookingModal;

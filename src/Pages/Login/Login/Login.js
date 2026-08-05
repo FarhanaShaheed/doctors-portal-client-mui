@@ -1,76 +1,100 @@
-import { Button, CircularProgress, Container, Grid, TextField, Typography, Alert } from '@mui/material';
 import React, { useState } from 'react';
-import { NavLink, useHistory,useLocation } from 'react-router-dom';
-import login from '../../../images/login.png';
+import { Link, useHistory, useLocation } from 'react-router-dom';
+import loginArt from '../../../images/login.png';
 import useAuth from './../../../hooks/useAuth';
+import { IconArrow, IconGoogle, IconTooth } from '../../Shared/Icons/Icons';
 
 const Login = () => {
-    const [loginData, setLoginData] = useState({});
-    const {user,loginUser,isLoading,signInWithGoogle ,authError} = useAuth();
+  const [loginData, setLoginData] = useState({ email: '', password: '' });
+  const [submitted, setSubmitted] = useState(false);
+  const { user, loginUser, isLoading, signInWithGoogle, authError, demoMode } = useAuth();
+  const location = useLocation();
+  const history = useHistory();
 
-    const location = useLocation();
-    const history = useHistory();
+  const change = (e) => setLoginData({ ...loginData, [e.target.name]: e.target.value });
 
-const handleOnChange = e =>{
-        const field = e.target.name;
-        const value = e.target.value;
-        const newLoginData = {...loginData};
-        newLoginData[field] = value;
-        setLoginData(newLoginData);
-    }
+  const submit = (e) => {
+    e.preventDefault();
+    setSubmitted(true);
+    loginUser(loginData.email, loginData.password, location, history);
+  };
 
-    const handleLoginSubmit = e =>{
-       loginUser(loginData.email, loginData.password,location, history);
-        e.preventDefault();
-    }
+  return (
+    <div className="dp-auth">
+      <aside className="dp-auth-side">
+        <Link to="/" className="dp-brand" style={{ color: '#fff' }}>
+          <span className="dp-logo"><IconTooth size={21} /></span>
+          <span>Doctors Portal<small>Dental care</small></span>
+        </Link>
 
-    const handleGoogleSignIn = e =>{
-        signInWithGoogle(location,history)
-    }
-    return (
-        <Container>
-        <Grid container spacing={2}>
-            <Grid item sx={{ mt: 8 }} xs={12} md={6}>
-               <Typography variant="body1" gutterBottom>Login</Typography>
-               <form onSubmit={handleLoginSubmit}>
-                   <TextField 
-                   sx={{width:'75%',m:1}}
-                   id="standard-basic" label="Your Email" 
-                   name="email"
-                   onBlur={handleOnChange}
-                   variant="standard">
-                   </TextField>
-                   <TextField 
-                   sx={{width:'75%',m:1}}
-                   id="standard-basic" label="Your Password" 
-                   name="password"
-                   onBlur={handleOnChange}
-                   type="password"
-                   variant="standard">
-                   </TextField>
-                   
-                   <Button variant="contained" sx={{width:'75%',m:1}} type="submit">Login</Button>
+        <div>
+          <h2>Welcome back to<br />your dental care.</h2>
+          <p>
+            Sign in to see your upcoming appointments, book a new slot or open the
+            clinic dashboard.
+          </p>
+          <img src={loginArt} alt="" />
+        </div>
 
-                   <NavLink
-                   style={{textDecoration:'none'}}
-                   to="/register">
-                      <Button variant="text">New User? Please Register</Button>
-                   </NavLink>
-                   {isLoading && <CircularProgress></CircularProgress>
-               }
-               {user?.email && <Alert severity="success">Login successfully</Alert>}
-               {authError && <Alert severity="error">{authError}</Alert>}
-               </form>
-               <p>---------------------</p>
-               <Button onClick={handleGoogleSignIn} variant="contained">Google Sign In</Button>
-               
-            </Grid>
-            <Grid item xs={12} md={6}>
-                <img style={{width:'100%'}} src={login} alt="" />
-            </Grid>
-            </Grid>
-        </Container>
-    );
+        <p style={{ fontSize: '.82rem', color: '#8189ad' }}>© {new Date().getFullYear()} Doctors Portal</p>
+      </aside>
+
+      <main className="dp-auth-main">
+        <div className="dp-auth-card">
+          <h2>Log in</h2>
+          <p className="sub">Enter your details to continue.</p>
+
+          {demoMode && (
+            <div className="dp-alert dp-alert-info dp-demo-note">
+              <b>Demo mode.</b> No Firebase keys are configured, so <b>any</b> email and
+              password will sign you in — and the demo account has admin rights, so the
+              full dashboard is explorable.
+            </div>
+          )}
+
+          <form onSubmit={submit}>
+            <div className="dp-field">
+              <label htmlFor="l-email">Email address</label>
+              <input
+                id="l-email" className="dp-input" name="email" type="email" required
+                autoComplete="username" placeholder="you@example.com"
+                value={loginData.email} onChange={change}
+              />
+            </div>
+            <div className="dp-field">
+              <label htmlFor="l-password">Password</label>
+              <input
+                id="l-password" className="dp-input" name="password" type="password" required
+                autoComplete="current-password" placeholder="••••••••"
+                value={loginData.password} onChange={change}
+              />
+            </div>
+
+            {authError && <div className="dp-alert dp-alert-err">{authError}</div>}
+            {submitted && user?.email && <div className="dp-alert dp-alert-ok">Signed in as {user.email}</div>}
+
+            <button type="submit" className="dp-btn dp-btn-primary dp-btn-block" disabled={isLoading}>
+              {isLoading ? 'Signing in…' : <>Log in <IconArrow size={18} /></>}
+            </button>
+          </form>
+
+          <div className="dp-divider">or</div>
+
+          <button
+            type="button"
+            className="dp-btn dp-btn-ghost dp-btn-block"
+            onClick={() => signInWithGoogle(location, history)}
+          >
+            <IconGoogle size={18} /> Continue with Google
+          </button>
+
+          <p className="dp-auth-foot">
+            New here? <Link to="/register">Create an account</Link>
+          </p>
+        </div>
+      </main>
+    </div>
+  );
 };
 
 export default Login;

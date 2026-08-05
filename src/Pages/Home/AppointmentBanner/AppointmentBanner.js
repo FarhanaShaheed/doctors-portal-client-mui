@@ -1,47 +1,32 @@
 import React from 'react';
-import Box from '@mui/material/Box';
-import Grid from '@mui/material/Grid';
+import { Link } from 'react-router-dom';
 import doctor from '../../../images/doctor.png';
-import bg from '../../../images/appointment-bg.png';
-import { Button, Typography } from '@mui/material';
+import { IconArrow } from '../../Shared/Icons/Icons';
 
-const appointmentBanner = {
-    background: `url(${bg})`,
-    backgroundColor: 'rgba(45,58,74, .85)' ,
-    backgroundBlendMode:'darken,luminosity',
-    marginTop: 175
-}
-
-const AppointmentBanner = () => {
-    return (
-            <Box style={appointmentBanner} sx={{ flexGrow: 1 }}>
-      <Grid container spacing={2}>
-        <Grid item xs={12} md={6}>
-           <img
-           style={{width:400,marginTop:'-110px'}}
-           src={doctor} alt="" />
-        </Grid>
-        <Grid item xs={12} md={6} sx={{display:'flex',justifyContent:'flex-start',
-        textAlign:'left',
-        alignItems:'center'}}>
-           <Box>
-           <Typography variant="h6" sx={{mb:5}} style={{color:'#5CE7ED'}}>
-              Appointment
-           </Typography>
-           <Typography variant="h4"  style={{color:'white'}}>
-              Make an Appointment Today
-           </Typography>
-           <Typography variant="h6" sx={{my:5}}  style={{color:'white', fontSize:14,fontWeight:300}}>
-              Lorem ipsum dolor sit, amet consectetur adipisicing elit. Modi nesciunt cumque numquam earum sed, itaque incidunt nisi architecto quam eaque.
-           </Typography>
-           <Button variant="contained" style={{backgroundColor:'#5CE7ED'}}>Learn More</Button>
-           </Box>
-           
-        </Grid>
-      </Grid>
-    </Box>
-        
-    );
-};
+const AppointmentBanner = () => (
+  <section className="dp-section">
+    <div className="dp-wrap">
+      <div className="dp-cta dp-reveal">
+        <div>
+          <span className="dp-eyebrow" style={{ background: 'rgba(255,255,255,.16)', color: '#e6e2ff' }}>
+            Appointment
+          </span>
+          <h2 className="dp-h2">Make an appointment today</h2>
+          <p>
+            Choose a date, see exactly which slots are still open and confirm in
+            one click. You get an instant confirmation and a reminder the morning
+            of your visit — no phone calls, no waiting on hold.
+          </p>
+          <Link to="/appointment" className="dp-btn dp-btn-white">
+            Choose your slot <IconArrow size={18} />
+          </Link>
+        </div>
+        <div className="dp-cta-img">
+          <img src={doctor} alt="Dentist ready for an appointment" />
+        </div>
+      </div>
+    </div>
+  </section>
+);
 
 export default AppointmentBanner;

@@ -1,0 +1,8 @@
+[
+  { "id": "u1", "displayName": "Rafiul Karim", "email": "rafiul.karim@example.com", "admin": true, "joined": "2024-02-11", "visits": 14 },
+  { "id": "u2", "displayName": "Sadia Noor", "email": "sadia.noor@example.com", "admin": false, "joined": "2024-05-03", "visits": 8 },
+  { "id": "u3", "displayName": "Mahin Islam", "email": "mahin.islam@example.com", "admin": false, "joined": "2024-07-21", "visits": 3 },
+  { "id": "u4", "displayName": "Tania Sultana", "email": "tania.sultana@example.com", "admin": true, "joined": "2023-11-08", "visits": 21 },
+  { "id": "u5", "displayName": "Arif Mahmud", "email": "arif.mahmud@example.com", "admin": false, "joined": "2025-01-16", "visits": 5 },
+  { "id": "u6", "displayName": "Nabila Haque", "email": "nabila.haque@example.com", "admin": false, "joined": "2025-03-02", "visits": 11 }
+]

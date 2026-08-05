@@ -1,43 +1,58 @@
 import React from 'react';
-import Box from '@mui/material/Box';
-import Grid from '@mui/material/Grid';
+import { Link } from 'react-router-dom';
 import chair from '../../../images/chair.png';
-import bg from '../../../images/bg.png';
-import { Typography, Button,Container } from '@mui/material';
+import { IconArrow, IconCalendar, IconShield, IconStethoscope } from '../../Shared/Icons/Icons';
 
-const bannerBg = {
-    background: `url(${bg})`,
-    height:450
-}
-const verticalCenter = {
-    display: 'flex',
-    height:400,
-    alignItems: 'center'
-}
+const Banner = () => (
+  <section className="dp-hero">
+    <div className="dp-wrap">
+      <div className="dp-hero-grid">
+        <div>
+          <span className="dp-eyebrow">Dhaka&apos;s modern dental clinic</span>
+          <h1>
+            Your new smile <br />
+            <span className="accent">starts right here</span>
+          </h1>
+          <p className="dp-hero-lead">
+            Pick a day, pick a slot, walk in. Six specialist services, transparent
+            pricing and a clinic team that actually runs on time — booking takes
+            under a minute.
+          </p>
 
-const Banner = () => {
-    return (
-        <Container style={{bannerBg}} sx={{ flexGrow: 1 }}>
-        <Grid container spacing={2}>
-          <Grid item style={{...verticalCenter,textAlign:'left'}} xs={12} md={5}>
-         <Box>
-         <Typography variant="h3">
-              Your New Smile <br />
-              Starts Here
-          </Typography>
-          <Typography variant="h6" sx={{ my:5,fontSize:13 , fontWeight:300, color:'gray'}}>           
-              Lorem ipsum dolor sit amet consectetur, adipisicing elit. Ullam voluptate perferendis libero nihil sint aliquid beatae quis? Nihil, hic fugit.
-          </Typography>
-          <Button variant="contained" style={{backgroundColor:'#5CE7ED'}}>Get Appointment</Button>
-         </Box>
-          </Grid>
-          <Grid item xs={12} md={7} style={verticalCenter}>
-            <img style={{width:'350px'}} src={chair} alt="" />
-          </Grid>
+          <div className="dp-hero-ctas">
+            <Link to="/appointment" className="dp-btn dp-btn-primary">
+              Book an appointment <IconArrow size={18} />
+            </Link>
+            <a href="#services" className="dp-btn dp-btn-light">Explore services</a>
+          </div>
 
-        </Grid>
-      </Container>
-    );
-};
+          <div className="dp-hero-stats">
+            <div><b>12k+</b><span>Happy patients</span></div>
+            <div><b>24</b><span>Specialists</span></div>
+            <div><b>4.9★</b><span>Average rating</span></div>
+          </div>
+        </div>
+
+        <div className="dp-hero-visual">
+          <div className="dp-hero-orb" />
+          <img className="dp-hero-img" src={chair} alt="Modern dental treatment chair" />
+
+          <div className="dp-float dp-float-1">
+            <span className="ic"><IconCalendar size={17} /></span>
+            <span>Next slot today<small>08:00 – 09:00 AM</small></span>
+          </div>
+          <div className="dp-float dp-float-2">
+            <span className="ic"><IconShield size={17} /></span>
+            <span>Insurance ready<small>Cashless claims</small></span>
+          </div>
+          <div className="dp-float dp-float-3">
+            <span className="ic"><IconStethoscope size={17} /></span>
+            <span>On-call dentist<small>7 days a week</small></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+);
 
 export default Banner;

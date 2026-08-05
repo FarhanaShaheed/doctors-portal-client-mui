@@ -1,134 +1,170 @@
 import { useEffect, useState } from 'react';
-import initializaFirebase from './../Pages/Login/Firebase/firebase.init';
-import { getAuth, createUserWithEmailAndPassword,onAuthStateChanged,signInWithEmailAndPassword,GoogleAuthProvider,signInWithPopup,updateProfile,getIdToken,signOut } from "firebase/auth";
+import initializeFirebase from './../Pages/Login/Firebase/firebase.init';
+import { isFirebaseConfigured } from './../Pages/Login/Firebase/firebase.config';
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  onAuthStateChanged,
+  signInWithEmailAndPassword,
+  GoogleAuthProvider,
+  signInWithPopup,
+  updateProfile,
+  getIdToken,
+  signOut,
+} from 'firebase/auth';
 
+if (isFirebaseConfigured) initializeFirebase();
 
-initializaFirebase();
+/* DEMO MODE ------------------------------------------------------------------
+   With no Firebase keys (the public demo deploy) authentication runs entirely
+   client side: any email + password signs you in, the session lives in
+   localStorage, and the demo user is an admin so the whole dashboard is
+   explorable. The returned API shape is identical in both modes, so no
+   consumer needs to know which mode it is running in. */
+const DEMO_KEY = 'dp_demo_user';
+const demoRead = () => {
+  try { return JSON.parse(localStorage.getItem(DEMO_KEY)) || null; } catch (e) { return null; }
+};
+const demoWrite = (u) => {
+  try {
+    if (u) localStorage.setItem(DEMO_KEY, JSON.stringify(u));
+    else localStorage.removeItem(DEMO_KEY);
+  } catch (e) { /* private mode */ }
+};
 
-const useFirebase = () =>{
-      const [user,setUser] = useState({});
-      const [isLoading, setIsLoading] = useState(true);
-      const[authError, setAuthError] = useState('');
-      const[admin,setAdmin] = useState(false);
-      const[token,setToken] = useState('');
+const useFirebase = () => {
+  const [user, setUser] = useState({});
+  const [isLoading, setIsLoading] = useState(true);
+  const [authError, setAuthError] = useState('');
+  const [admin, setAdmin] = useState(false);
+  const [token, setToken] = useState('');
 
-      const auth = getAuth();
-      const googleProvider=  new GoogleAuthProvider();
+  // Never call getAuth() without an initialised app — it throws.
+  const auth = isFirebaseConfigured ? getAuth() : null;
+  const googleProvider = isFirebaseConfigured ? new GoogleAuthProvider() : null;
 
-    const registerUser = (email, password,name,history) =>{
-      setIsLoading(true);
-        createUserWithEmailAndPassword(auth, email,password)
-        .then((userCredential) => {
-            setAuthError('');
-            const newUser = {email, displayName:name};
-            setUser(newUser);
-            //save user to the database
-            saveUser(email,name,'POST');
-            //send name to firebase after creation
-            updateProfile(auth.currentUser, {
-              displayName: name
-            }).then(() =>{
+  const demoSignIn = (u, location, history, fallback = '/dashboard') => {
+    demoWrite(u);
+    setUser(u);
+    setAdmin(true);
+    setToken('demo-token');
+    setAuthError('');
+    setIsLoading(false);
+    const destination = location?.state?.from || fallback;
+    if (history) history.replace(destination);
+  };
 
-            }).catch((error) =>{
+  const registerUser = (email, password, name, history) => {
+    if (!isFirebaseConfigured) {
+      if (!email || !password) { setAuthError('Please enter an email address and a password.'); return; }
+      demoSignIn({ email, displayName: name || email.split('@')[0], demo: true }, null, history);
+      return;
+    }
+    setIsLoading(true);
+    createUserWithEmailAndPassword(auth, email, password)
+      .then(() => {
+        setAuthError('');
+        setUser({ email, displayName: name });
+        saveUser(email, name, 'POST');
+        updateProfile(auth.currentUser, { displayName: name }).catch(() => {});
+        history.replace('/');
+      })
+      .catch((error) => setAuthError(error.message))
+      .finally(() => setIsLoading(false));
+  };
 
-            });
-            history.replace('/');
-          })
-          .catch((error) => {
-            setAuthError(error.message);
-            
-          })
-          .finally(() => setIsLoading(false));
+  const loginUser = (email, password, location, history) => {
+    if (!isFirebaseConfigured) {
+      if (!email || !password) { setAuthError('Please enter an email address and a password.'); return; }
+      demoSignIn({ email, displayName: email.split('@')[0], demo: true }, location, history);
+      return;
+    }
+    setIsLoading(true);
+    signInWithEmailAndPassword(auth, email, password)
+      .then(() => {
+        const destination = location?.state?.from || '/dashboard';
+        history.replace(destination);
+        setAuthError('');
+      })
+      .catch((error) => setAuthError(error.message))
+      .finally(() => setIsLoading(false));
+  };
+
+  const signInWithGoogle = (location, history) => {
+    if (!isFirebaseConfigured) {
+      demoSignIn({ email: 'demo.patient@doctorsportal.demo', displayName: 'Demo Patient', demo: true }, location, history);
+      return;
+    }
+    setIsLoading(true);
+    signInWithPopup(auth, googleProvider)
+      .then((result) => {
+        const u = result.user;
+        saveUser(u.email, u.displayName, 'PUT');
+        setAuthError('');
+        const destination = location?.state?.from || '/dashboard';
+        history.replace(destination);
+      })
+      .catch((error) => setAuthError(error.message))
+      .finally(() => setIsLoading(false));
+  };
+
+  // observe user state
+  useEffect(() => {
+    if (!isFirebaseConfigured) {
+      const stored = demoRead();
+      if (stored) { setUser(stored); setAdmin(true); setToken('demo-token'); }
+      setIsLoading(false);
+      return undefined;
+    }
+    const unsubscribe = onAuthStateChanged(auth, (current) => {
+      if (current) {
+        setUser(current);
+        getIdToken(current).then(setToken).catch(() => {});
+        fetch(`http://localhost:5000/users/${current.email}`)
+          .then((res) => res.json())
+          .then((data) => setAdmin(Boolean(data.admin)))
+          .catch(() => setAdmin(false));
+      } else {
+        setUser({});
+        setAdmin(false);
       }
+      setIsLoading(false);
+    });
+    return () => unsubscribe();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-      const loginUser = (email,password,location,history) =>{
-        setIsLoading(true);
-        signInWithEmailAndPassword(auth, email, password)
-        .then((userCredential) => {
-          const destination = location?.state?.from || '/';
-          history.replace(destination);
-          setAuthError('');
-        })
-        .catch((error) => {
-          setAuthError(error.message);
-        })
-        .finally(() => setIsLoading(false));
-        
-      }
+  const logOut = () => {
+    if (!isFirebaseConfigured) {
+      demoWrite(null);
+      setUser({});
+      setAdmin(false);
+      setToken('');
+      return;
+    }
+    setIsLoading(true);
+    signOut(auth).catch(() => {}).finally(() => setIsLoading(false));
+  };
 
-      const signInWithGoogle = (location, history) =>{
-        setIsLoading(true);
+  const saveUser = (email, displayName, method) => {
+    fetch('http://localhost:5000/users', {
+      method,
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ email, displayName }),
+    }).catch(() => {});
+  };
 
-        signInWithPopup(auth,googleProvider)
-        .then(result =>{
-          const user = result.user;
-          saveUser(user.email, user.displayName, 'PUT');
-          setAuthError('');
-          const destination = location?.state?.from || '/';
-          history.replace(destination);
-        })
-        .catch((error) =>{
-          setAuthError(error.message);
-        }).finally(() => setIsLoading(false));
-
-      }
-    //observe user state
-    useEffect(()=>{
-        const unsubscribed = onAuthStateChanged(auth, (user) => {
-            if (user) {
-              setUser(user);
-              getIdToken(user)
-              .then(idToken =>{
-                setToken(idToken);
-              })
-            } else {
-              setUser({});
-            }
-            setIsLoading(false);
-          });
-          return() => unsubscribed;
-    },[])
-
-    useEffect(()=>{
-        fetch(`https://morning-cliffs-43827.herokuapp.com/users/${user.email}`)
-        .then(res => res.json())
-        .then(data => setAdmin(data.admin))
-    },[user.email])
-
-      const logOut = () =>{
-        signOut(auth).then(() => {
-            // Sign-out successful.
-          }).catch((error) => {
-            // An error happened.
-          })
-          .finally(() => setIsLoading(false));
-
-      }
-
-      const saveUser = (email,displayName, method) =>{
-        const user = {email,displayName};
-        fetch('https://morning-cliffs-43827.herokuapp.com/users',{
-          method: method,
-          headers:{
-            'content-type': 'application/json'
-          },
-          body: JSON.stringify(user)
-        })
-        .then()
-      }
-
-
-      return{
-          user,
-          admin,
-          token,
-          isLoading,
-          authError,
-          registerUser, 
-          logOut,
-          loginUser,
-          signInWithGoogle
-      }
-}
+  return {
+    user,
+    admin,
+    token,
+    isLoading,
+    authError,
+    demoMode: !isFirebaseConfigured,
+    registerUser,
+    logOut,
+    loginUser,
+    signInWithGoogle,
+  };
+};
 
 export default useFirebase;

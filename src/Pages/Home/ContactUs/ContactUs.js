@@ -1,53 +1,74 @@
-import React from 'react';
-import Box from '@mui/material/Box';
-import TextField from '@mui/material/TextField';
-import { Container, Typography } from '@mui/material';
-import bg from '../../../images/appointment-bg.png';
-
-
-const contactBackground = {
-    background: `url(${bg})`,
-    backgroundColor: 'rgba(45,58,74, .85)' ,
-    backgroundBlendMode:'darken,luminosity',
-   width:'700px',
-   height:'500px',
-   marginLeft: '200px'
-}
+import React, { useState } from 'react';
+import { IconMail, IconPhone, IconPin, IconArrow } from '../../Shared/Icons/Icons';
 
 const ContactUs = () => {
-    return (
-        <Container>
-            <Box style={contactBackground} sx={{ flexGrow: 1}}>
-             <Typography variant="h6" sx={{mb:2}} style={{color:'#5CE7ED'}}>
-         CONTACT US
-      </Typography>
-      <Typography variant="h4" sx={{mb:2, fontWeight: '500',color:'white'}} gutterBottom component="div">
-        Always Connect With Us
-      </Typography>
-          <form>
-        <TextField
-          sx={{width:'70%',backgroundColor:"white", m:1}}
-          id="outlined-size-small"
-          defaultValue="Email Address"
-          size="small"
-        />
-        <TextField
-          sx={{width:'70%',backgroundColor:"white",m:1}}
-          id="outlined-size-small"
-          defaultValue="Subject"
-          size="small"
-        />
-        <TextField
-          sx={{width:'70%',backgroundColor:"white", m:1}}
-          id="outlined-multiline-static"
-          multiline
-          rows={4}
-          defaultValue="Your Message"
-        />
-      </form>
-      </Box>
-        </Container>
-    );
+  const [sent, setSent] = useState(false);
+  const [form, setForm] = useState({ email: '', subject: '', message: '' });
+
+  const change = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+
+  const submit = (e) => {
+    e.preventDefault();
+    setSent(true);
+    setForm({ email: '', subject: '', message: '' });
+  };
+
+  return (
+    <section className="dp-section" id="contact">
+      <div className="dp-wrap">
+        <div className="dp-contact-card dp-reveal">
+          <div>
+            <span className="dp-eyebrow" style={{ background: 'rgba(255,255,255,.12)', color: '#d8d5ff' }}>
+              Contact us
+            </span>
+            <h2 className="dp-h2">Always connected with you</h2>
+            <p className="lead">
+              Questions about a treatment, insurance or a booking? Send a note and
+              the front desk replies within one working day.
+            </p>
+
+            <div className="dp-contact-list">
+              <div><span className="ic"><IconPin size={17} /></span> House 24, Road 8, Dhanmondi, Dhaka 1205</div>
+              <div><span className="ic"><IconPhone size={17} /></span> +880 1711 220 118</div>
+              <div><span className="ic"><IconMail size={17} /></span> hello@doctorsportal.demo</div>
+            </div>
+          </div>
+
+          <form onSubmit={submit}>
+            {sent && (
+              <div className="dp-alert dp-alert-ok" role="status">
+                Thanks — your message is in the queue. The clinic will reply by email.
+              </div>
+            )}
+            <div className="dp-field">
+              <label htmlFor="c-email">Email address</label>
+              <input
+                id="c-email" className="dp-input" name="email" type="email" required
+                placeholder="you@example.com" value={form.email} onChange={change}
+              />
+            </div>
+            <div className="dp-field">
+              <label htmlFor="c-subject">Subject</label>
+              <input
+                id="c-subject" className="dp-input" name="subject" required
+                placeholder="What is this about?" value={form.subject} onChange={change}
+              />
+            </div>
+            <div className="dp-field">
+              <label htmlFor="c-message">Your message</label>
+              <textarea
+                id="c-message" className="dp-input" name="message" rows={4} required
+                placeholder="Tell us a little more…" value={form.message} onChange={change}
+              />
+            </div>
+            <button type="submit" className="dp-btn dp-btn-primary dp-btn-block">
+              Send message <IconArrow size={18} />
+            </button>
+          </form>
+        </div>
+      </div>
+    </section>
+  );
 };
 
 export default ContactUs;

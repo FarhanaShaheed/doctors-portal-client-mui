@@ -1,54 +1,50 @@
 import React from 'react';
-import Box from '@mui/material/Box';
-import Grid from '@mui/material/Grid';
-import Typography from '@mui/material/Typography';
 import Service from './../Service/Service';
-import fluoride from '../../../images/fluoride.png'
-import cavity from '../../../images/cavity.png'
-import whitening from '../../../images/whitening.png'
-import { Container } from '@mui/material';
+import fluoride from '../../../images/fluoride.png';
+import cavity from '../../../images/cavity.png';
+import whitening from '../../../images/whitening.png';
 
 const services = [
-    {
-    name: 'Fluoride Treatment',
-    description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Totam magnam dolore qui iste, repellat asperiores adipisci quidem dolorum veniam nobis debitis. Corporis suscipit libero at, assumenda nostrum officiis a ipsum!',
-    img: fluoride
-    },
-    {
-    name: 'Cavity Fillig',
-    description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Totam magnam dolore qui iste, repellat asperiores adipisci quidem dolorum veniam nobis debitis. Corporis suscipit libero at, assumenda nostrum officiis a ipsum!',
-    img: cavity
-    },
-    {
-    name: 'Teeth Whitening',
-    description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Totam magnam dolore qui iste, repellat asperiores adipisci quidem dolorum veniam nobis debitis. Corporis suscipit libero at, assumenda nostrum officiis a ipsum!',
-    img: whitening
-    },
-]
+  {
+    id: 's1',
+    name: 'Fluoride treatment',
+    description:
+      'A 20-minute protective varnish that re-mineralises weakened enamel and cuts the risk of new cavities — the single cheapest thing you can do for your teeth.',
+    img: fluoride,
+  },
+  {
+    id: 's2',
+    name: 'Cavity filling',
+    description:
+      'Tooth-coloured composite fillings shaped and cured in one sitting. We match the shade to the tooth next door, so nobody can tell where the filling is.',
+    img: cavity,
+  },
+  {
+    id: 's3',
+    name: 'Teeth whitening',
+    description:
+      'Clinically supervised whitening that lifts 4–6 shades in a single session, with a take-home tray so the result still looks fresh six months later.',
+    img: whitening,
+  },
+];
 
+const Services = () => (
+  <section className="dp-section" id="services">
+    <div className="dp-wrap dp-center">
+      <span className="dp-eyebrow dp-reveal">Our services</span>
+      <h2 className="dp-h2 dp-reveal">Everything your teeth need, in one clinic</h2>
+      <p className="dp-sub dp-reveal" style={{ marginBottom: 46 }}>
+        Preventive, restorative and cosmetic dentistry under one roof — with the
+        same dentist following you through the whole treatment plan.
+      </p>
 
-
-const Services = () => {
-    return (
-        <Box sx={{ flexGrow: 1 }}>
-      <Container>
-      <Typography sx={{fontWeight: 500, m:2, color:'success.main'}} variant="h6" component="div">
-          Our Services  
-        </Typography>
-      <Typography sx={{fontWeight: 600, m:5}} variant="h4" component="div">
-          Services We Provide
-        </Typography>
-      <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>
-        {
-            services.map(service =><Service
-            key = {service.key}
-            service = {service}
-            ></Service> )
-        }
-      </Grid>
-      </Container>
-    </Box>
-    );
-};
+      <div className="dp-grid-3">
+        {services.map((service, i) => (
+          <Service key={service.id} service={service} index={i} />
+        ))}
+      </div>
+    </div>
+  </section>
+);
 
 export default Services;

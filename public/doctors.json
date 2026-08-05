@@ -1,0 +1,80 @@
+[
+  {
+    "id": "d1",
+    "name": "Dr. Ayesha Rahman",
+    "speciality": "Orthodontics",
+    "email": "ayesha.rahman@doctorsportal.demo",
+    "phone": "+880 1711 220 118",
+    "experience": 12,
+    "rating": 4.9,
+    "patients": 1840,
+    "status": "Active",
+    "initials": "AR",
+    "tone": "indigo"
+  },
+  {
+    "id": "d2",
+    "name": "Dr. Imran Chowdhury",
+    "speciality": "Oral Surgery",
+    "email": "imran.chowdhury@doctorsportal.demo",
+    "phone": "+880 1712 445 902",
+    "experience": 15,
+    "rating": 4.8,
+    "patients": 2110,
+    "status": "Active",
+    "initials": "IC",
+    "tone": "violet"
+  },
+  {
+    "id": "d3",
+    "name": "Dr. Nusrat Jahan",
+    "speciality": "Pediatric Dentistry",
+    "email": "nusrat.jahan@doctorsportal.demo",
+    "phone": "+880 1733 908 771",
+    "experience": 9,
+    "rating": 5.0,
+    "patients": 1425,
+    "status": "Active",
+    "initials": "NJ",
+    "tone": "teal"
+  },
+  {
+    "id": "d4",
+    "name": "Dr. Tanvir Hossain",
+    "speciality": "Cosmetic Dentistry",
+    "email": "tanvir.hossain@doctorsportal.demo",
+    "phone": "+880 1755 331 640",
+    "experience": 7,
+    "rating": 4.7,
+    "patients": 980,
+    "status": "On leave",
+    "initials": "TH",
+    "tone": "amber"
+  },
+  {
+    "id": "d5",
+    "name": "Dr. Farhana Binta",
+    "speciality": "Endodontics",
+    "email": "farhana.binta@doctorsportal.demo",
+    "phone": "+880 1799 512 003",
+    "experience": 11,
+    "rating": 4.9,
+    "patients": 1620,
+    "status": "Active",
+    "initials": "FB",
+    "tone": "rose"
+  },
+  {
+    "id": "d6",
+    "name": "Dr. Sabbir Ahmed",
+    "speciality": "Periodontics",
+    "email": "sabbir.ahmed@doctorsportal.demo",
+    "phone": "+880 1688 774 210",
+    "experience": 6,
+    "rating": 4.6,
+    "patients": 745,
+    "status": "Active",
+    "initials": "SA",
+    "tone": "indigo"
+  }
+]
