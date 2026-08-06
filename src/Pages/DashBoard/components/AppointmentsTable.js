@@ -1,11 +1,17 @@
 import React from 'react';
 import { IconInbox } from '../../Shared/Icons/Icons';
+import { durationLabel, money } from '../../../api/schedule';
 
 const tones = ['', 'violet', 'teal', 'amber', 'rose'];
 
 const initials = (name = '') =>
   name.split(' ').filter(Boolean).slice(0, 2).map((w) => w[0]).join('').toUpperCase() || '?';
 
+const docInitials = (name = '') =>
+  name.replace(/^Dr\.?\s*/i, '').split(' ').filter(Boolean).slice(0, 2).map((w) => w[0]).join('').toUpperCase() || 'DR';
+
+/* The scheduler writes real start times, durations and prices, so the console
+   shows the same shape of data a receptionist would read off a day sheet. */
 const AppointmentsTable = ({
   rows = [],
   compact = false,
@@ -30,8 +36,9 @@ const AppointmentsTable = ({
             <th>Patient</th>
             <th>Service</th>
             <th>Time</th>
-            {!compact && <th>Doctor</th>}
+            <th>Doctor</th>
             {!compact && <th>Date</th>}
+            {!compact && <th>Fee</th>}
             <th>Status</th>
           </tr>
         </thead>
@@ -48,9 +55,18 @@ const AppointmentsTable = ({
                 </div>
               </td>
               <td>{row.serviceName}</td>
-              <td style={{ whiteSpace: 'nowrap' }}>{row.time}</td>
-              {!compact && <td>{row.doctor || '—'}</td>}
+              <td style={{ whiteSpace: 'nowrap' }}>
+                <span className="dtime">{row.time}</span>
+                <span className="dsub">{durationLabel(row.duration || 30)}</span>
+              </td>
+              <td style={{ whiteSpace: 'nowrap' }}>
+                <span className="dwho-doc">
+                  <span className="davatar sm">{docInitials(row.doctor)}</span>
+                  {row.doctor || '—'}
+                </span>
+              </td>
               {!compact && <td style={{ whiteSpace: 'nowrap' }}>{row.date}</td>}
+              {!compact && <td style={{ whiteSpace: 'nowrap' }}>{row.price ? money(row.price) : '—'}</td>}
               <td>
                 <span className={`pill ${(row.status || 'confirmed').toLowerCase()}`}>
                   {row.seeded ? row.status : row.status === 'Pending' ? 'New' : row.status}

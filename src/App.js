@@ -15,9 +15,11 @@ function App() {
       <AuthProvider>
         <Router>
           <Switch>
-            <PrivateRoute path="/appointment">
+            {/* Browsing the calendar is open to everyone, Doctolib-style —
+                the login wall only appears at the confirmation step. */}
+            <Route path="/appointment">
               <Appointment />
-            </PrivateRoute>
+            </Route>
             <Route path="/home">
               <Home />
             </Route>

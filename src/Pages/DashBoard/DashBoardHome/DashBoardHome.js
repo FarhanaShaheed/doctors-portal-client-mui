@@ -1,6 +1,6 @@
 import React, { useContext, useMemo, useState } from 'react';
 import { ClinicContext } from '../DashBoard/Dashboard';
-import Calender from './../../Shared/Calender/Calender';
+import MiniMonth from './../../Shared/MiniMonth/MiniMonth';
 import StatCard from '../components/StatCard';
 import AreaChart from '../components/AreaChart';
 import ServiceBars from '../components/ServiceBars';
@@ -106,7 +106,14 @@ const DashBoardHome = () => {
               <div className="sub">{prettyDate(date)}</div>
             </div>
           </div>
-          <Calender date={date} setDate={setDate} dark />
+          <MiniMonth
+            value={date}
+            onChange={setDate}
+            dark
+            disablePast={false}
+            dimEmpty={false}
+            availability={(d) => appointments.filter((a) => a.dateKey === dateKey(d)).length}
+          />
         </section>
 
         <section className="panel dp-reveal dp-d1">

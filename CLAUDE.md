@@ -36,6 +36,16 @@ NODE_OPTIONS=--openssl-legacy-provider npm start
 **To go real:** set `REACT_APP_FIREBASE_*` env vars (and `REACT_APP_API_BASE` for a hosted
 API) and redeploy — the code switches over automatically, no edits needed.
 
+## Scheduling system (the centrepiece)
+`src/Pages/Appointment/` + `src/api/schedule.js`. Doctor rail (search + specialty filter,
+"next available" badges) → week strip (‹ › navigation, per-day slot counts, Full/past
+states, MiniMonth popover) → slot board (Morning/Afternoon/Evening groups, booked slots
+struck through, skeleton shimmer) → reason chips (duration + price) → sticky summary →
+confirmation modal → success. Slots are generated from each doctor's `workingHours` /
+`slotDuration` in `public/doctors.json` minus existing bookings; new bookings persist via
+`demoApi` and show up in `MyAppointments` and the admin tables. Styles are the `.sch-*`
+block at the end of `src/index.css`. No extra npm dependencies — plain `Date` maths.
+
 ## Design system
 Indigo/violet palette in `src/index.css`, imported **last** in `src/index.js` (after the
 now-blanked `App.css`); `Plus Jakarta Sans` via `public/index.html`.

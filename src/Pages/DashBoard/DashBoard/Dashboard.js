@@ -3,6 +3,7 @@ import { Link, NavLink, Route, Switch, useLocation, useRouteMatch } from 'react-
 
 import DashBoardHome from './../DashBoardHome/DashBoardHome';
 import Appointments from '../Appointments/Appointments';
+import MyAppointments from '../MyAppointments/MyAppointments';
 import Doctors from '../Doctors/Doctors';
 import MakeAdmin from './../MakeAdmin/MakeAdmin';
 import AddDoctor from './AddDoctor/AddDoctor';
@@ -11,7 +12,7 @@ import useAuth from '../../../hooks/useAuth';
 import useClinicData from '../../../hooks/useClinicData';
 import {
   IconGrid, IconCalendar, IconStethoscope, IconShieldUser, IconPlus,
-  IconSearch, IconMenu, IconTooth, IconLogout, IconArrow,
+  IconSearch, IconMenu, IconTooth, IconLogout, IconArrow, IconCheck,
 } from '../../Shared/Icons/Icons';
 
 export const ClinicContext = createContext({ appointments: [], doctors: [], users: [], loading: true, reload: () => {}, search: '' });
@@ -37,6 +38,7 @@ function Dashboard() {
   const links = [
     { to: url, exact: true, label: 'Overview', icon: <IconGrid size={19} /> },
     { to: `${url}/appointments`, label: 'Appointments', icon: <IconCalendar size={19} /> },
+    { to: `${url}/my-appointments`, label: 'My appointments', icon: <IconCheck size={19} /> },
     { to: `${url}/doctors`, label: 'Doctors', icon: <IconStethoscope size={19} /> },
   ];
   const adminLinks = [
@@ -131,6 +133,7 @@ function Dashboard() {
             <Switch>
               <Route exact path={path}><DashBoardHome /></Route>
               <Route path={`${path}/appointments`}><Appointments /></Route>
+              <Route path={`${path}/my-appointments`}><MyAppointments /></Route>
               <Route path={`${path}/doctors`}><Doctors /></Route>
               <AdminRoute path={`${path}/makeAdmin`}><MakeAdmin /></AdminRoute>
               <AdminRoute path={`${path}/addDoctor`}><AddDoctor /></AdminRoute>

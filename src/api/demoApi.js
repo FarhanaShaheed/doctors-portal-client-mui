@@ -24,11 +24,14 @@ const canReachApi = () => {
   return true;
 };
 
+/* Storage keys are versioned: the v2 schema adds per-doctor working hours plus
+   real start times and durations on appointments, so returning visitors get a
+   fresh seed instead of the flat v1 rows. */
 const LS = {
-  appointments: 'dp_appointments',
-  doctors: 'dp_doctors',
+  appointments: 'dp_appointments_v2',
+  doctors: 'dp_doctors_v2',
   admins: 'dp_admins',
-  seeded: 'dp_seeded_v1',
+  seeded: 'dp_seeded_v2',
 };
 
 /* ------------------------------ tiny helpers ----------------------------- */
@@ -95,6 +98,33 @@ export const shortDay = (d) =>
 
 /* ------------------------------ appointments ----------------------------- */
 
+/* The v1 data model stored a single display string ("08.00 AM - 09.00 AM").
+   v2 stores a machine-readable `startTime` + `duration` so the scheduler can
+   detect collisions; these two helpers keep old records readable. */
+const pad = (n) => String(n).padStart(2, '0');
+
+const parseStart = (row) => {
+  if (row.startTime) return row.startTime;
+  const match = /(\d{1,2})[.:](\d{2})\s*(AM|PM)?/i.exec(row.time || '');
+  if (!match) return '09:00';
+  let hour = Number(match[1]);
+  const minute = Number(match[2]);
+  const suffix = (match[3] || '').toUpperCase();
+  if (suffix === 'PM' && hour < 12) hour += 12;
+  if (suffix === 'AM' && hour === 12) hour = 0;
+  return `${pad(hour)}:${pad(minute)}`;
+};
+
+/** "09:30" + 45 → "10:15" */
+export const addMinutes = (hhmm, minutes) => {
+  const [h, m] = String(hhmm).split(':').map(Number);
+  const total = (h || 0) * 60 + (m || 0) + Number(minutes || 0);
+  return `${pad(Math.floor(total / 60) % 24)}:${pad(total % 60)}`;
+};
+
+export const slotLabel = (startTime, duration = 30) =>
+  `${startTime} – ${addMinutes(startTime, duration)}`;
+
 /** Seeds localStorage once from /appointments.json, anchoring the sample data
  *  to the current week so the dashboard always has something to show. */
 const seedAppointments = async () => {
@@ -103,14 +133,21 @@ const seedAppointments = async () => {
   const today = new Date();
   const rows = seed.map((row) => {
     const when = addDays(today, row.dayOffset || 0);
+    const startTime = parseStart(row);
+    const duration = Number(row.duration) || 30;
     return {
       _id: row.id,
       patientName: row.patientName,
       email: row.email,
       phone: row.phone,
-      time: row.time,
+      startTime,
+      duration,
+      endTime: addMinutes(startTime, duration),
+      time: slotLabel(startTime, duration),
       serviceName: row.serviceName,
       doctor: row.doctor,
+      doctorId: row.doctorId,
+      price: row.price,
       status: row.status || 'Confirmed',
       dateKey: dateKey(when),
       date: when.toLocaleDateString(),
@@ -131,9 +168,21 @@ export const getAppointments = async ({ email, token } = {}) => {
   return seedAppointments();
 };
 
+export const getMyAppointments = async (email) => {
+  const all = await getAppointments();
+  if (!email) return [];
+  return all.filter((a) => (a.email || '').toLowerCase() === String(email).toLowerCase());
+};
+
 export const createAppointment = async (appointment) => {
+  const duration = Number(appointment.duration) || 30;
+  const startTime = appointment.startTime || '09:00';
   const payload = {
     ...appointment,
+    startTime,
+    duration,
+    endTime: addMinutes(startTime, duration),
+    time: appointment.time || slotLabel(startTime, duration),
     _id: `local-${Date.now()}`,
     status: 'Pending',
     createdAt: new Date().toISOString(),
@@ -189,13 +238,33 @@ export const createDoctor = async (doctor) => {
     .map((w) => w[0].toUpperCase())
     .join('');
   const tones = ['indigo', 'violet', 'teal', 'amber', 'rose'];
+  /* A new doctor is bookable straight away: give them the clinic's standard
+     rota and a consultation matching their speciality. */
+  const standardHours = {
+    sun: [['09:00', '13:00'], ['15:00', '18:00']],
+    mon: [['09:00', '13:00'], ['15:00', '18:00']],
+    tue: [['09:00', '13:00'], ['15:00', '18:00']],
+    wed: [['09:00', '13:00'], ['15:00', '18:00']],
+    thu: [['09:00', '13:00'], ['15:00', '18:00']],
+    fri: [],
+    sat: [['10:00', '14:00']],
+  };
   const record = {
     id: `local-${Date.now()}`,
     status: 'Active',
     rating: 5,
+    reviews: 0,
     patients: 0,
     experience: Number(doctor.experience) || 1,
     tone: tones[current.length % tones.length],
+    room: 'Room 101 · Level 1',
+    languages: ['Bangla', 'English'],
+    slotDuration: 30,
+    workingHours: standardHours,
+    services: [
+      { name: `${doctor.speciality || 'General'} consultation`, duration: 30, price: 1500 },
+      { name: 'Follow-up visit', duration: 30, price: 900 },
+    ],
     ...doctor,
     initials: initials || 'DR',
   };

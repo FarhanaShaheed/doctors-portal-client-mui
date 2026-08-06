@@ -1,5 +1,29 @@
 # Changelog
 
+## [2.1.0] — 2026-08-06 — Doctolib-style scheduling
+### Added
+- **Complete rebuild of the booking experience** (`src/Pages/Appointment/`):
+  - `DoctorRail` — searchable, specialty-filterable doctor cards with avatar, rating,
+    review count, years of experience and a live "next available" badge (or "On leave").
+  - `WeekStrip` — 7-day strip with ‹ › week navigation, Today, per-day slot counts,
+    Full / past-day states, plus a `MiniMonth` popover for jumping to any date.
+  - `SlotBoard` — real time slots grouped into Morning / Afternoon / Evening, generated
+    from each doctor's working hours minus already-booked appointments; booked slots are
+    struck through and disabled; skeleton shimmer while loading; availability legend.
+  - Reason-for-visit chips carrying duration and price.
+  - `SummaryPanel` — sticky booking summary (doctor, date, time, reason, room, total).
+  - `BookingModal` — confirmation dialog and an animated success state.
+  - `MyAppointments` — patient's upcoming visits; new bookings appear instantly here
+    and in the admin appointment tables.
+- `src/api/schedule.js` — slot generation/availability logic (plain `Date`, no new deps).
+- Richer seed data in `public/doctors.json` (working hours, slot duration, services,
+  prices, ratings) and `public/appointments.json`.
+- Full scheduler stylesheet in `src/index.css` (`.sch-*`), responsive to 390px with a
+  horizontally scrolling day strip, and `prefers-reduced-motion` support.
+### Verified
+- Live: 6 doctors, 7-day strip, real slots, slot → modal → confirm all working,
+  **0 page/console errors**, no horizontal overflow on mobile.
+
 ## [2.0.0] — 2026-08-05 — Full overhaul & relaunch
 ### Added
 - **Demo mode**: works with no backend or Firebase keys — guarded dual-mode auth,
