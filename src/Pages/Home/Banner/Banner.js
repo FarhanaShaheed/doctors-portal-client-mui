@@ -8,7 +8,7 @@ const Banner = () => (
     <div className="dp-wrap">
       <div className="dp-hero-grid">
         <div>
-          <span className="dp-eyebrow">Dhaka&apos;s modern dental clinic</span>
+          <span className="dp-eyebrow">Frankfurt&apos;s modern dental clinic</span>
           <h1>
             Your new smile <br />
             <span className="accent">starts right here</span>

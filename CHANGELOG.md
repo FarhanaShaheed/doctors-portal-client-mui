@@ -1,5 +1,28 @@
 # Changelog
 
+## [2.2.0] — 2026-08-14 — Eight fixes from the audit
+### Added
+- **Stripe payments** (`src/Pages/DashBoard/Payment/Payment.js`): a Pay button on every
+  unpaid upcoming appointment opens a payment page using **Stripe Elements** — card data
+  goes straight to Stripe's iframe, never through this code. Test mode. Without
+  `REACT_APP_STRIPE_PK` the page shows **no card fields at all**, just an explanation and
+  a "record as paid at the desk" action, rather than faking a card form.
+- **Front-desk inbox** (`DashBoard/Messages`), admin-only: contact enquiries with reply
+  (pre-filled email + marks the record replied) and delete.
+- **Forgot password** on the login page (identical confirmation whether or not the address
+  exists, so it can't be used to discover accounts).
+- `src/api/config.js` — one place for the API base **and** the clinic's identity.
+### Fixed
+- **The contact form discarded every message.** `submit()` only flipped a flag; nothing
+  was stored anywhere. Messages now reach the API, or localStorage when it is down.
+- **Phone accepted letters** — "abcdefgh" booked an appointment. Rejected now, with the
+  minimum/maximum digit checks, alongside validation for every other field.
+- **Pages opened scrolled halfway down** — added `components/ScrollToTop.js`.
+- **Booking collected only name, email and phone.** It now takes date of birth, address,
+  insurance type/insurer/number, first-visit and reason for the visit.
+- Hardcoded `localhost:5000` in 5 places → `API_BASE`.
+- Placeholder Dhaka identity and ৳ prices → Frankfurt clinic and euro fees.
+
 ## [2.1.0] — 2026-08-06 — Doctolib-style scheduling
 ### Added
 - **Complete rebuild of the booking experience** (`src/Pages/Appointment/`):

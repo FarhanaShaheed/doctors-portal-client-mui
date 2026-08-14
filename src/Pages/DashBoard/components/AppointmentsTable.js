@@ -1,6 +1,7 @@
 import React from 'react';
 import { IconInbox } from '../../Shared/Icons/Icons';
 import { durationLabel, money } from '../../../api/schedule';
+import { Link } from 'react-router-dom';
 
 const tones = ['', 'violet', 'teal', 'amber', 'rose'];
 
@@ -15,6 +16,7 @@ const docInitials = (name = '') =>
 const AppointmentsTable = ({
   rows = [],
   compact = false,
+  showPay = false,        // patient view: offer to settle the fee
   emptyTitle = 'Nothing booked yet',
   emptyText = 'Appointments booked on the public site land here instantly.',
 }) => {
@@ -40,6 +42,7 @@ const AppointmentsTable = ({
             {!compact && <th>Date</th>}
             {!compact && <th>Fee</th>}
             <th>Status</th>
+            {showPay && <th>Payment</th>}
           </tr>
         </thead>
         <tbody>
@@ -72,6 +75,13 @@ const AppointmentsTable = ({
                   {row.seeded ? row.status : row.status === 'Pending' ? 'New' : row.status}
                 </span>
               </td>
+              {showPay && (
+                <td style={{ whiteSpace: 'nowrap' }}>
+                  {row.paid
+                    ? <span className="pill paid">Paid</span>
+                    : <Link to={`/dashboard/payment/${row._id}`} className="dp-btn dp-btn-primary dp-btn-sm">Pay</Link>}
+                </td>
+              )}
             </tr>
           ))}
         </tbody>

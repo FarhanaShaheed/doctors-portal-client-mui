@@ -10,10 +10,11 @@ import AddDoctor from './AddDoctor/AddDoctor';
 import AdminRoute from '../../Login/AdminRoute/AdminRoute';
 import useAuth from '../../../hooks/useAuth';
 import useClinicData from '../../../hooks/useClinicData';
+import Messages from '../Messages/Messages';
+import Payment from '../Payment/Payment';
 import {
   IconGrid, IconCalendar, IconStethoscope, IconShieldUser, IconPlus,
-  IconSearch, IconMenu, IconTooth, IconLogout, IconArrow, IconCheck,
-} from '../../Shared/Icons/Icons';
+  IconSearch, IconMenu, IconTooth, IconLogout, IconArrow, IconCheck, IconMail } from '../../Shared/Icons/Icons';
 
 export const ClinicContext = createContext({ appointments: [], doctors: [], users: [], loading: true, reload: () => {}, search: '' });
 
@@ -42,6 +43,7 @@ function Dashboard() {
     { to: `${url}/doctors`, label: 'Doctors', icon: <IconStethoscope size={19} /> },
   ];
   const adminLinks = [
+    { to: `${url}/messages`, label: 'Messages', icon: <IconMail size={19} /> },
     { to: `${url}/makeAdmin`, label: 'Make admin', icon: <IconShieldUser size={19} /> },
     { to: `${url}/addDoctor`, label: 'Add doctor', icon: <IconPlus size={19} /> },
   ];
@@ -134,7 +136,9 @@ function Dashboard() {
               <Route exact path={path}><DashBoardHome /></Route>
               <Route path={`${path}/appointments`}><Appointments /></Route>
               <Route path={`${path}/my-appointments`}><MyAppointments /></Route>
+              <Route path={`${path}/payment/:id`}><Payment /></Route>
               <Route path={`${path}/doctors`}><Doctors /></Route>
+              <AdminRoute path={`${path}/messages`}><Messages /></AdminRoute>
               <AdminRoute path={`${path}/makeAdmin`}><MakeAdmin /></AdminRoute>
               <AdminRoute path={`${path}/addDoctor`}><AddDoctor /></AdminRoute>
             </Switch>

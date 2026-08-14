@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { IconMail, IconPhone, IconPin, IconArrow } from '../../Shared/Icons/Icons';
+import { createMessage } from '../../../api/demoApi';
+import { CLINIC } from '../../../api/config';
 
 const ContactUs = () => {
   const [sent, setSent] = useState(false);
@@ -7,8 +9,18 @@ const ContactUs = () => {
 
   const change = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
-  const submit = (e) => {
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState('');
+
+  const submit = async (e) => {
     e.preventDefault();
+    const email = form.email.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) { setError('That email address looks incomplete.'); return; }
+    if (form.message.trim().length < 10) { setError('A little more detail helps the desk answer properly.'); return; }
+    setError(''); setSending(true);
+    // reaches the clinic dashboard's inbox (API when up, local store otherwise)
+    await createMessage({ ...form, email, name: form.name || email.split('@')[0] });
+    setSending(false);
     setSent(true);
     setForm({ email: '', subject: '', message: '' });
   };
@@ -28,9 +40,9 @@ const ContactUs = () => {
             </p>
 
             <div className="dp-contact-list">
-              <div><span className="ic"><IconPin size={17} /></span> House 24, Road 8, Dhanmondi, Dhaka 1205</div>
-              <div><span className="ic"><IconPhone size={17} /></span> +880 1711 220 118</div>
-              <div><span className="ic"><IconMail size={17} /></span> hello@doctorsportal.demo</div>
+              <div><span className="ic"><IconPin size={17} /></span> {`${CLINIC.street}, ${CLINIC.city}`}</div>
+              <div><span className="ic"><IconPhone size={17} /></span> {CLINIC.phone}</div>
+              <div><span className="ic"><IconMail size={17} /></span> {CLINIC.email}</div>
             </div>
           </div>
 

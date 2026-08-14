@@ -8,12 +8,14 @@ import Register from './Pages/Login/Register/Register';
 import AuthProvider from './context/AuthProvider/AuthProvider';
 import PrivateRoute from './Pages/Login/Login/PrivateRoute/PrivateRoute';
 import Dashboard from './Pages/DashBoard/DashBoard/Dashboard';
+import ScrollToTop from './components/ScrollToTop';
 
 function App() {
   return (
     <div className="App">
       <AuthProvider>
         <Router>
+        <ScrollToTop />
           <Switch>
             {/* Browsing the calendar is open to everyone, Doctolib-style —
                 the login wall only appears at the confirmation step. */}

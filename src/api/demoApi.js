@@ -16,13 +16,9 @@
    console clean. On http://localhost the real backend is still used.
 --------------------------------------------------------------------------- */
 
-const API = process.env.REACT_APP_API_BASE || 'http://localhost:5000';
+import { API_BASE, canReachApi } from './config';
 
-const canReachApi = () => {
-  if (typeof window === 'undefined') return false;
-  if (window.location.protocol === 'https:' && API.startsWith('http://')) return false;
-  return true;
-};
+const API = API_BASE;
 
 /* Storage keys are versioned: the v2 schema adds per-doctor working hours plus
    real start times and durations on appointments, so returning visitors get a
@@ -32,6 +28,7 @@ const LS = {
   doctors: 'dp_doctors_v2',
   admins: 'dp_admins',
   seeded: 'dp_seeded_v2',
+  messages: 'dp_messages',
 };
 
 /* ------------------------------ tiny helpers ----------------------------- */
@@ -297,6 +294,52 @@ export const makeAdmin = async (email, token) => {
 /* ------------------------------- analytics ------------------------------- */
 
 /** Appointment counts for the next `days` days, ready for the dashboard chart. */
+/* ---- contact-form messages --------------------------------------------------
+   The form used to discard everything it collected: submit() only flipped a flag.
+   Messages now go to the API when it is reachable and to localStorage otherwise,
+   so the clinic dashboard has an inbox either way. */
+/* Marks an appointment paid. Real backend first (it stores the Stripe transaction
+   against the booking); otherwise the local copy is updated so the receipt persists. */
+export const payAppointment = async (id, transactionId) => {
+  const patch = { paid: true, transactionId, paidAt: new Date().toISOString() };
+  const remote = await softFetch(`${API}/appointments/${id}/payment`, {
+    method: 'PUT', headers: { 'content-type': 'application/json' }, body: JSON.stringify(patch),
+  });
+  if (!remote) {
+    write(LS.appointments, read(LS.appointments, []).map((a) => (String(a._id) === String(id) ? { ...a, ...patch } : a)));
+  }
+  return patch;
+};
+
+export const getMessages = async () => {
+  const remote = await softFetch(`${API}/messages`);
+  if (Array.isArray(remote)) return remote;
+  return read(LS.messages, []);
+};
+
+export const createMessage = async (message) => {
+  const record = { ...message, _id: 'm' + Date.now(), status: 'new', createdAt: new Date().toISOString() };
+  const remote = await softFetch(`${API}/messages`, {
+    method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(record),
+  });
+  if (!remote) write(LS.messages, [record, ...read(LS.messages, [])]);
+  return record;
+};
+
+export const updateMessage = async (id, patch) => {
+  const remote = await softFetch(`${API}/messages/${id}`, {
+    method: 'PUT', headers: { 'content-type': 'application/json' }, body: JSON.stringify(patch),
+  });
+  if (!remote) write(LS.messages, read(LS.messages, []).map((m) => (m._id === id ? { ...m, ...patch } : m)));
+  return true;
+};
+
+export const deleteMessage = async (id) => {
+  const remote = await softFetch(`${API}/messages/${id}`, { method: 'DELETE' });
+  if (!remote) write(LS.messages, read(LS.messages, []).filter((m) => m._id !== id));
+  return true;
+};
+
 export const appointmentsByDay = (appointments, days = 7, from = new Date()) => {
   const buckets = [];
   for (let i = 0; i < days; i += 1) {

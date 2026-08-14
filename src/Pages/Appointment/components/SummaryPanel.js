@@ -42,7 +42,7 @@ const SummaryPanel = ({ doctor, date, service, slot, onReview, user, mine }) => 
         <li>
           <span className="ic"><IconPin size={16} /></span>
           <span className="lb">Where</span>
-          <span className="vl">{doctor.room || 'Dhanmondi clinic'}</span>
+          <span className="vl">{doctor.room || 'Zeil practice'}</span>
         </li>
       </ul>
 

@@ -4,7 +4,7 @@
     "name": "Dr. Ayesha Rahman",
     "speciality": "Orthodontics",
     "email": "ayesha.rahman@doctorsportal.demo",
-    "phone": "+880 1711 220 118",
+    "phone": "+49 69 1200 4400",
     "experience": 12,
     "rating": 4.9,
     "reviews": 412,
@@ -13,22 +13,83 @@
     "initials": "AR",
     "tone": "indigo",
     "room": "Room 204 · Level 2",
-    "languages": ["Bangla", "English"],
+    "languages": [
+      "Bangla",
+      "English"
+    ],
     "bio": "Invisible aligners and complex bite correction for teens and adults.",
     "slotDuration": 30,
     "workingHours": {
-      "sun": [["09:00", "13:00"], ["14:00", "17:30"]],
-      "mon": [["09:00", "13:00"], ["14:00", "17:30"]],
-      "tue": [["09:00", "13:00"], ["14:00", "17:30"]],
-      "wed": [["09:00", "13:00"]],
-      "thu": [["09:00", "13:00"], ["14:00", "18:00"]],
+      "sun": [
+        [
+          "09:00",
+          "13:00"
+        ],
+        [
+          "14:00",
+          "17:30"
+        ]
+      ],
+      "mon": [
+        [
+          "09:00",
+          "13:00"
+        ],
+        [
+          "14:00",
+          "17:30"
+        ]
+      ],
+      "tue": [
+        [
+          "09:00",
+          "13:00"
+        ],
+        [
+          "14:00",
+          "17:30"
+        ]
+      ],
+      "wed": [
+        [
+          "09:00",
+          "13:00"
+        ]
+      ],
+      "thu": [
+        [
+          "09:00",
+          "13:00"
+        ],
+        [
+          "14:00",
+          "18:00"
+        ]
+      ],
       "fri": [],
-      "sat": [["10:00", "14:00"]]
+      "sat": [
+        [
+          "10:00",
+          "14:00"
+        ]
+      ]
     },
     "services": [
-      { "name": "Teeth Orthodontics", "duration": 30, "price": 1500 },
-      { "name": "Aligner fitting", "duration": 45, "price": 3500 },
-      { "name": "Retainer check-up", "duration": 30, "price": 1200 }
+      {
+        "name": "Teeth Orthodontics",
+        "duration": 30,
+        "price": 60
+      },
+      {
+        "name": "Aligner fitting",
+        "duration": 45,
+        "price": 140
+      },
+      {
+        "name": "Retainer check-up",
+        "duration": 30,
+        "price": 50
+      }
     ]
   },
   {
@@ -36,7 +97,7 @@
     "name": "Dr. Imran Chowdhury",
     "speciality": "Oral Surgery",
     "email": "imran.chowdhury@doctorsportal.demo",
-    "phone": "+880 1712 445 902",
+    "phone": "+49 69 1200 4400",
     "experience": 15,
     "rating": 4.8,
     "reviews": 587,
@@ -45,22 +106,84 @@
     "initials": "IC",
     "tone": "violet",
     "room": "Surgical suite · Level 3",
-    "languages": ["Bangla", "English", "Hindi"],
+    "languages": [
+      "Bangla",
+      "English",
+      "Hindi"
+    ],
     "bio": "Wisdom teeth, implants and reconstructive jaw surgery.",
     "slotDuration": 30,
     "workingHours": {
-      "sun": [["10:00", "13:30"], ["16:00", "20:00"]],
-      "mon": [["10:00", "13:30"], ["16:00", "20:00"]],
-      "tue": [["16:00", "20:00"]],
-      "wed": [["10:00", "13:30"], ["16:00", "20:00"]],
-      "thu": [["10:00", "13:30"], ["16:00", "19:00"]],
+      "sun": [
+        [
+          "10:00",
+          "13:30"
+        ],
+        [
+          "16:00",
+          "20:00"
+        ]
+      ],
+      "mon": [
+        [
+          "10:00",
+          "13:30"
+        ],
+        [
+          "16:00",
+          "20:00"
+        ]
+      ],
+      "tue": [
+        [
+          "16:00",
+          "20:00"
+        ]
+      ],
+      "wed": [
+        [
+          "10:00",
+          "13:30"
+        ],
+        [
+          "16:00",
+          "20:00"
+        ]
+      ],
+      "thu": [
+        [
+          "10:00",
+          "13:30"
+        ],
+        [
+          "16:00",
+          "19:00"
+        ]
+      ],
       "fri": [],
-      "sat": [["11:00", "15:00"]]
+      "sat": [
+        [
+          "11:00",
+          "15:00"
+        ]
+      ]
     },
     "services": [
-      { "name": "Oral Surgery", "duration": 60, "price": 6500 },
-      { "name": "Surgical consultation", "duration": 30, "price": 2000 },
-      { "name": "Implant review", "duration": 45, "price": 4000 }
+      {
+        "name": "Oral Surgery",
+        "duration": 60,
+        "price": 260
+      },
+      {
+        "name": "Surgical consultation",
+        "duration": 30,
+        "price": 80
+      },
+      {
+        "name": "Implant review",
+        "duration": 45,
+        "price": 160
+      }
     ]
   },
   {
@@ -68,7 +191,7 @@
     "name": "Dr. Nusrat Jahan",
     "speciality": "Pediatric Dentistry",
     "email": "nusrat.jahan@doctorsportal.demo",
-    "phone": "+880 1733 908 771",
+    "phone": "+49 69 1200 4400",
     "experience": 9,
     "rating": 5.0,
     "reviews": 316,
@@ -77,22 +200,83 @@
     "initials": "NJ",
     "tone": "teal",
     "room": "Kids clinic · Level 1",
-    "languages": ["Bangla", "English"],
+    "languages": [
+      "Bangla",
+      "English"
+    ],
     "bio": "Gentle, anxiety-free dentistry for children from 2 to 16.",
     "slotDuration": 30,
     "workingHours": {
-      "sun": [["09:30", "12:30"], ["15:00", "18:30"]],
-      "mon": [["09:30", "12:30"], ["15:00", "18:30"]],
-      "tue": [["09:30", "12:30"], ["15:00", "18:30"]],
-      "wed": [["09:30", "12:30"], ["15:00", "18:30"]],
-      "thu": [["09:30", "12:30"]],
-      "fri": [["10:00", "13:00"]],
+      "sun": [
+        [
+          "09:30",
+          "12:30"
+        ],
+        [
+          "15:00",
+          "18:30"
+        ]
+      ],
+      "mon": [
+        [
+          "09:30",
+          "12:30"
+        ],
+        [
+          "15:00",
+          "18:30"
+        ]
+      ],
+      "tue": [
+        [
+          "09:30",
+          "12:30"
+        ],
+        [
+          "15:00",
+          "18:30"
+        ]
+      ],
+      "wed": [
+        [
+          "09:30",
+          "12:30"
+        ],
+        [
+          "15:00",
+          "18:30"
+        ]
+      ],
+      "thu": [
+        [
+          "09:30",
+          "12:30"
+        ]
+      ],
+      "fri": [
+        [
+          "10:00",
+          "13:00"
+        ]
+      ],
       "sat": []
     },
     "services": [
-      { "name": "Pediatric Dental", "duration": 30, "price": 1100 },
-      { "name": "Fluoride treatment", "duration": 30, "price": 900 },
-      { "name": "First visit (0–5 yrs)", "duration": 45, "price": 1400 }
+      {
+        "name": "Pediatric Dental",
+        "duration": 30,
+        "price": 45
+      },
+      {
+        "name": "Fluoride treatment",
+        "duration": 30,
+        "price": 35
+      },
+      {
+        "name": "First visit (0–5 yrs)",
+        "duration": 45,
+        "price": 55
+      }
     ]
   },
   {
@@ -100,7 +284,7 @@
     "name": "Dr. Tanvir Hossain",
     "speciality": "Cosmetic Dentistry",
     "email": "tanvir.hossain@doctorsportal.demo",
-    "phone": "+880 1755 331 640",
+    "phone": "+49 69 1200 4400",
     "experience": 7,
     "rating": 4.7,
     "reviews": 204,
@@ -109,15 +293,32 @@
     "initials": "TH",
     "tone": "amber",
     "room": "Room 108 · Level 1",
-    "languages": ["Bangla", "English"],
+    "languages": [
+      "Bangla",
+      "English"
+    ],
     "bio": "Veneers, whitening and full smile makeovers. Back from leave soon.",
     "slotDuration": 30,
     "workingHours": {
-      "sun": [], "mon": [], "tue": [], "wed": [], "thu": [], "fri": [], "sat": []
+      "sun": [],
+      "mon": [],
+      "tue": [],
+      "wed": [],
+      "thu": [],
+      "fri": [],
+      "sat": []
     },
     "services": [
-      { "name": "Cosmetic Dentistry", "duration": 45, "price": 3200 },
-      { "name": "Teeth whitening", "duration": 60, "price": 5200 }
+      {
+        "name": "Cosmetic Dentistry",
+        "duration": 45,
+        "price": 130
+      },
+      {
+        "name": "Teeth whitening",
+        "duration": 60,
+        "price": 210
+      }
     ]
   },
   {
@@ -125,7 +326,7 @@
     "name": "Dr. Farhana Binta",
     "speciality": "Endodontics",
     "email": "farhana.binta@doctorsportal.demo",
-    "phone": "+880 1799 512 003",
+    "phone": "+49 69 1200 4400",
     "experience": 11,
     "rating": 4.9,
     "reviews": 398,
@@ -134,22 +335,87 @@
     "initials": "FB",
     "tone": "rose",
     "room": "Room 302 · Level 3",
-    "languages": ["Bangla", "English"],
+    "languages": [
+      "Bangla",
+      "English"
+    ],
     "bio": "Root canals and pain management with single-visit endodontics.",
     "slotDuration": 30,
     "workingHours": {
-      "sun": [["08:30", "12:00"], ["14:30", "18:00"]],
-      "mon": [["08:30", "12:00"], ["14:30", "18:00"]],
-      "tue": [["08:30", "12:00"], ["14:30", "18:00"]],
-      "wed": [["08:30", "12:00"], ["14:30", "18:00"]],
-      "thu": [["08:30", "12:00"]],
+      "sun": [
+        [
+          "08:30",
+          "12:00"
+        ],
+        [
+          "14:30",
+          "18:00"
+        ]
+      ],
+      "mon": [
+        [
+          "08:30",
+          "12:00"
+        ],
+        [
+          "14:30",
+          "18:00"
+        ]
+      ],
+      "tue": [
+        [
+          "08:30",
+          "12:00"
+        ],
+        [
+          "14:30",
+          "18:00"
+        ]
+      ],
+      "wed": [
+        [
+          "08:30",
+          "12:00"
+        ],
+        [
+          "14:30",
+          "18:00"
+        ]
+      ],
+      "thu": [
+        [
+          "08:30",
+          "12:00"
+        ]
+      ],
       "fri": [],
-      "sat": [["09:00", "13:00"], ["17:00", "20:00"]]
+      "sat": [
+        [
+          "09:00",
+          "13:00"
+        ],
+        [
+          "17:00",
+          "20:00"
+        ]
+      ]
     },
     "services": [
-      { "name": "Teeth Cleaning", "duration": 30, "price": 1000 },
-      { "name": "Root canal therapy", "duration": 60, "price": 5800 },
-      { "name": "Emergency pain relief", "duration": 30, "price": 1800 }
+      {
+        "name": "Teeth Cleaning",
+        "duration": 30,
+        "price": 40
+      },
+      {
+        "name": "Root canal therapy",
+        "duration": 60,
+        "price": 230
+      },
+      {
+        "name": "Emergency pain relief",
+        "duration": 30,
+        "price": 70
+      }
     ]
   },
   {
@@ -157,7 +423,7 @@
     "name": "Dr. Sabbir Ahmed",
     "speciality": "Periodontics",
     "email": "sabbir.ahmed@doctorsportal.demo",
-    "phone": "+880 1688 774 210",
+    "phone": "+49 69 1200 4400",
     "experience": 6,
     "rating": 4.6,
     "reviews": 158,
@@ -166,22 +432,88 @@
     "initials": "SA",
     "tone": "indigo",
     "room": "Room 112 · Level 1",
-    "languages": ["Bangla", "English"],
+    "languages": [
+      "Bangla",
+      "English"
+    ],
     "bio": "Gum disease, deep cleaning and preventive cavity care.",
     "slotDuration": 30,
     "workingHours": {
-      "sun": [["09:00", "12:30"], ["15:30", "19:00"]],
-      "mon": [["09:00", "12:30"], ["15:30", "19:00"]],
-      "tue": [["09:00", "12:30"], ["15:30", "19:00"]],
-      "wed": [["15:30", "19:00"]],
-      "thu": [["09:00", "12:30"], ["15:30", "19:00"]],
-      "fri": [["16:00", "19:00"]],
-      "sat": [["09:00", "12:30"]]
+      "sun": [
+        [
+          "09:00",
+          "12:30"
+        ],
+        [
+          "15:30",
+          "19:00"
+        ]
+      ],
+      "mon": [
+        [
+          "09:00",
+          "12:30"
+        ],
+        [
+          "15:30",
+          "19:00"
+        ]
+      ],
+      "tue": [
+        [
+          "09:00",
+          "12:30"
+        ],
+        [
+          "15:30",
+          "19:00"
+        ]
+      ],
+      "wed": [
+        [
+          "15:30",
+          "19:00"
+        ]
+      ],
+      "thu": [
+        [
+          "09:00",
+          "12:30"
+        ],
+        [
+          "15:30",
+          "19:00"
+        ]
+      ],
+      "fri": [
+        [
+          "16:00",
+          "19:00"
+        ]
+      ],
+      "sat": [
+        [
+          "09:00",
+          "12:30"
+        ]
+      ]
     },
     "services": [
-      { "name": "Cavity Protection", "duration": 30, "price": 1300 },
-      { "name": "Deep gum cleaning", "duration": 45, "price": 2600 },
-      { "name": "Gum health review", "duration": 30, "price": 1000 }
+      {
+        "name": "Cavity Protection",
+        "duration": 30,
+        "price": 50
+      },
+      {
+        "name": "Deep gum cleaning",
+        "duration": 45,
+        "price": 105
+      },
+      {
+        "name": "Gum health review",
+        "duration": 30,
+        "price": 40
+      }
     ]
   }
 ]

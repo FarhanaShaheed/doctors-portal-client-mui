@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { IconTooth } from '../Icons/Icons';
+import { CLINIC } from '../../../api/config';
 
 const Footer = () => (
   <footer className="dp-footer">
@@ -38,8 +39,8 @@ const Footer = () => (
 
         <div>
           <h5>Get in touch</h5>
-          <p>House 24, Road 8<br />Dhanmondi, Dhaka 1205</p>
-          <p>+880 1711 220 118</p>
+          <p>{CLINIC.street}<br />{CLINIC.city}</p>
+          <p>{CLINIC.phone}</p>
           <p>hello@doctorsportal.demo</p>
         </div>
       </div>

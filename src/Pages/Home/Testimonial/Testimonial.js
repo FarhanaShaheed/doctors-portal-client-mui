@@ -15,7 +15,7 @@ const reviews = [
   {
     id: 'r2',
     name: 'Sadia Noor',
-    location: 'Dhanmondi, Dhaka',
+    location: 'Bornheim, Frankfurt',
     img: p2,
     text:
       'Two fillings, one visit, exactly the price I was quoted online. The reminder the morning of the appointment is a small thing but it saved me from forgetting.',
@@ -23,7 +23,7 @@ const reviews = [
   {
     id: 'r3',
     name: 'Rafiul Karim',
-    location: 'Gulshan, Dhaka',
+    location: 'Sachsenhausen, Frankfurt',
     img: p3,
     text:
       'I brought my daughter for a pediatric check-up and she actually wants to go back. Clean clinic, zero waiting, and everything visible in the patient portal afterwards.',

@@ -48,7 +48,7 @@ export const durationLabel = (mins = 30) => {
   return m ? `${h} h ${m} min` : `${h} hour${h > 1 ? 's' : ''}`;
 };
 
-export const money = (amount, currency = '৳') =>
+export const money = (amount, currency = '\u20ac') =>
   `${currency}${Number(amount || 0).toLocaleString('en-US')}`;
 
 /* ------------------------------ date helpers ----------------------------- */
@@ -115,7 +115,7 @@ export const workingHoursOf = (doctor) => (doctor && doctor.workingHours) || DEF
 
 export const servicesOf = (doctor) => {
   if (doctor && Array.isArray(doctor.services) && doctor.services.length) return doctor.services;
-  return [{ name: doctor?.speciality || 'Consultation', duration: doctor?.slotDuration || 30, price: 1500 }];
+  return [{ name: doctor?.speciality || 'Consultation', duration: doctor?.slotDuration || 30, price: 60 }];
 };
 
 export const worksOn = (doctor, date) => {

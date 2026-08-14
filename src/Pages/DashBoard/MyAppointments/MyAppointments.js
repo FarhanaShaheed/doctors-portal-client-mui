@@ -53,7 +53,7 @@ const MyAppointments = () => {
         <StatCard icon={<IconCalendar size={21} />} label="Upcoming" value={upcoming.length} />
         <StatCard icon={<IconCheck size={21} />} label="Total visits" value={mine.length} tone="t-mint" duration={1250} />
         <StatCard icon={<IconClock size={21} />} label="Past visits" value={past.length} tone="t-sky" duration={1350} />
-        <StatCard icon={<IconCalendar size={21} />} label="Total fees (BDT)" value={spend} tone="t-amber" duration={1450} />
+        <StatCard icon={<IconCalendar size={21} />} label="Total fees (EUR)" value={spend} tone="t-amber" duration={1450} />
       </div>
 
       {nextOne && (
@@ -100,6 +100,7 @@ const MyAppointments = () => {
           </div>
         </div>
         <AppointmentsTable
+          showPay
           rows={upcoming}
           emptyTitle="No upcoming visits"
           emptyText="Pick a slot on the booking page and it will appear here instantly."

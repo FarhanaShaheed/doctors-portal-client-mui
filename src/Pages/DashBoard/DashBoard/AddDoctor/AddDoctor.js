@@ -69,7 +69,7 @@ const AddDoctor = () => {
 
             <div>
               <label htmlFor="ad-phone">Phone</label>
-              <input id="ad-phone" className="dinput" name="phone" required placeholder="+880 1XXX XXXXXX" value={form.phone} onChange={change} />
+              <input id="ad-phone" className="dinput" name="phone" required placeholder="+49 69 1200 4400" value={form.phone} onChange={change} />
             </div>
 
             <div>

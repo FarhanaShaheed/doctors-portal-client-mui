@@ -16,8 +16,19 @@ const BookingModal = ({ doctor, date, service, slot, user, onClose, onBooked }) 
     patientName: user?.displayName || '',
     email: user?.email || '',
     phone: '',
+    birthDate: '',
+    gender: '',
+    street: '',
+    postcode: '',
+    city: '',
+    insurer: '',
+    insuranceType: 'statutory',
+    insuranceNumber: '',
+    reason: '',
+    firstVisit: 'yes',
     note: '',
   });
+  const [errors, setErrors] = useState({});
 
   useEffect(() => {
     const onKey = (e) => { if (e.key === 'Escape') onClose(); };
@@ -29,10 +40,51 @@ const BookingModal = ({ doctor, date, service, slot, user, onClose, onBooked }) 
     };
   }, [onClose]);
 
-  const change = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+  const change = (e) => {
+    const next = { ...form, [e.target.name]: e.target.value };
+    setForm(next);
+    if (errors[e.target.name]) setErrors({ ...errors, [e.target.name]: null });
+  };
+
+  /* A phone number is digits plus the separators people actually type. Letters used to
+     sail straight through — "abcdefgh" booked an appointment. */
+  const PHONE_OK = /^[0-9+()\/.\s-]+$/;
+  const EMAIL_OK = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
+  const validate = (v) => {
+    const e = {};
+    if (v.patientName.trim().length < 2) e.patientName = 'Please enter the patient\u2019s full name.';
+    if (!EMAIL_OK.test(v.email.trim())) e.email = 'That email address looks incomplete.';
+
+    const digits = v.phone.replace(/\D/g, '');
+    if (!v.phone.trim()) e.phone = 'We call this number to confirm the visit.';
+    else if (!PHONE_OK.test(v.phone.trim())) e.phone = 'A phone number cannot contain letters.';
+    else if (digits.length < 7) e.phone = `That is only ${digits.length} digit${digits.length === 1 ? '' : 's'} \u2014 at least 7 are needed.`;
+    else if (digits.length > 15) e.phone = 'That is too long for a phone number.';
+
+    if (!v.birthDate) e.birthDate = 'Date of birth is required for the patient file.';
+    else {
+      const age = (Date.now() - new Date(v.birthDate).getTime()) / 3.15576e10;
+      if (age < 0) e.birthDate = 'That date is in the future.';
+      else if (age > 120) e.birthDate = 'Please check that date.';
+    }
+    if (v.street.trim().length < 4) e.street = 'Street and house number are required.';
+    if (!/^\d{4,6}$/.test(v.postcode.trim())) e.postcode = 'Postcode should be 4-6 digits.';
+    if (v.city.trim().length < 2) e.city = 'City is required.';
+    if (v.insuranceType !== 'self' && v.insurer.trim().length < 2) e.insurer = 'Insurer is required (or choose self-payer).';
+    if (!v.reason.trim()) e.reason = 'Tell the doctor what the visit is about.';
+    return e;
+  };
 
   const submit = async (e) => {
     e.preventDefault();
+    const found = validate(form);
+    setErrors(found);
+    if (Object.keys(found).length) {
+      const el = document.querySelector('[data-invalid="true"]');
+      if (el) { el.scrollIntoView({ behavior: 'smooth', block: 'center' }); el.focus?.(); }
+      return;
+    }
     setSaving(true);
     const appointment = {
       ...form,
@@ -58,7 +110,7 @@ const BookingModal = ({ doctor, date, service, slot, user, onClose, onBooked }) 
       <li><span className="ic"><IconCalendar size={15} /></span>{prettyDate(date)}</li>
       <li><span className="ic"><IconClock size={15} /></span>{timeRange(slot.time, service.duration)} <i>({to12h(slot.time)})</i></li>
       <li><span className="ic"><IconCheck size={15} /></span>{service.name} · {durationLabel(service.duration)}</li>
-      <li><span className="ic"><IconPin size={15} /></span>{doctor.room || 'Dhanmondi clinic'}</li>
+      <li><span className="ic"><IconPin size={15} /></span>{doctor.room || 'Zeil practice'}</li>
     </ul>
   );
 
@@ -115,24 +167,103 @@ const BookingModal = ({ doctor, date, service, slot, user, onClose, onBooked }) 
               </div>
             </div>
 
-            <div className="dp-field">
-              <label htmlFor="b-name">Patient name</label>
-              <input id="b-name" className="dp-input" name="patientName" required value={form.patientName} onChange={change} placeholder="Full name" />
+            <div className="sch-form-sec"><span>1</span> Patient</div>
+
+            <div className="dp-two">
+              <div className="dp-field">
+                <label htmlFor="b-name">Patient name *</label>
+                <input id="b-name" className="dp-input" name="patientName" data-invalid={errors.patientName ? 'true' : undefined}
+                  value={form.patientName} onChange={change} placeholder="Full name" />
+                {errors.patientName && <span className="dp-err">{errors.patientName}</span>}
+              </div>
+              <div className="dp-field">
+                <label htmlFor="b-dob">Date of birth *</label>
+                <input id="b-dob" className="dp-input" name="birthDate" type="date" max={new Date().toISOString().slice(0, 10)}
+                  data-invalid={errors.birthDate ? 'true' : undefined} value={form.birthDate} onChange={change} />
+                {errors.birthDate && <span className="dp-err">{errors.birthDate}</span>}
+              </div>
             </div>
 
             <div className="dp-two">
               <div className="dp-field">
-                <label htmlFor="b-email">Email</label>
-                <input id="b-email" className="dp-input" name="email" type="email" required value={form.email} onChange={change} placeholder="you@example.com" />
+                <label htmlFor="b-email">Email *</label>
+                <input id="b-email" className="dp-input" name="email" type="email" data-invalid={errors.email ? 'true' : undefined}
+                  value={form.email} onChange={change} placeholder="you@example.com" />
+                {errors.email && <span className="dp-err">{errors.email}</span>}
               </div>
               <div className="dp-field">
-                <label htmlFor="b-phone">Phone</label>
-                <input id="b-phone" className="dp-input" name="phone" required value={form.phone} onChange={change} placeholder="+880 1XXX XXXXXX" />
+                <label htmlFor="b-phone">Phone *</label>
+                <input id="b-phone" className="dp-input" name="phone" type="tel" inputMode="tel"
+                  data-invalid={errors.phone ? 'true' : undefined} value={form.phone} onChange={change} placeholder="+49 69 1200 4400" />
+                {errors.phone && <span className="dp-err">{errors.phone}</span>}
+              </div>
+            </div>
+
+            <div className="sch-form-sec"><span>2</span> Address</div>
+
+            <div className="dp-field">
+              <label htmlFor="b-street">Street and house number *</label>
+              <input id="b-street" className="dp-input" name="street" data-invalid={errors.street ? 'true' : undefined}
+                value={form.street} onChange={change} placeholder="Musterstra\u00dfe 12" />
+              {errors.street && <span className="dp-err">{errors.street}</span>}
+            </div>
+            <div className="dp-two">
+              <div className="dp-field">
+                <label htmlFor="b-post">Postcode *</label>
+                <input id="b-post" className="dp-input" name="postcode" inputMode="numeric"
+                  data-invalid={errors.postcode ? 'true' : undefined} value={form.postcode} onChange={change} placeholder="60313" />
+                {errors.postcode && <span className="dp-err">{errors.postcode}</span>}
+              </div>
+              <div className="dp-field">
+                <label htmlFor="b-city">City *</label>
+                <input id="b-city" className="dp-input" name="city" data-invalid={errors.city ? 'true' : undefined}
+                  value={form.city} onChange={change} placeholder="Frankfurt am Main" />
+                {errors.city && <span className="dp-err">{errors.city}</span>}
+              </div>
+            </div>
+
+            <div className="sch-form-sec"><span>3</span> Insurance &amp; visit</div>
+
+            <div className="dp-two">
+              <div className="dp-field">
+                <label htmlFor="b-instype">Cover *</label>
+                <select id="b-instype" className="dp-input" name="insuranceType" value={form.insuranceType} onChange={change}>
+                  <option value="statutory">Statutory (gesetzlich)</option>
+                  <option value="private">Private (privat)</option>
+                  <option value="self">Self-payer</option>
+                </select>
+              </div>
+              <div className="dp-field">
+                <label htmlFor="b-insurer">Insurer {form.insuranceType === 'self' ? <i>(not needed)</i> : '*'}</label>
+                <input id="b-insurer" className="dp-input" name="insurer" disabled={form.insuranceType === 'self'}
+                  data-invalid={errors.insurer ? 'true' : undefined} value={form.insurer} onChange={change} placeholder="e.g. AOK, TK, Barmer" />
+                {errors.insurer && <span className="dp-err">{errors.insurer}</span>}
+              </div>
+            </div>
+
+            <div className="dp-two">
+              <div className="dp-field">
+                <label htmlFor="b-insno">Insurance number <i>(optional)</i></label>
+                <input id="b-insno" className="dp-input" name="insuranceNumber" value={form.insuranceNumber} onChange={change} placeholder="A123456789" />
+              </div>
+              <div className="dp-field">
+                <label htmlFor="b-first">First visit here?</label>
+                <select id="b-first" className="dp-input" name="firstVisit" value={form.firstVisit} onChange={change}>
+                  <option value="yes">Yes, first visit</option>
+                  <option value="no">No, returning patient</option>
+                </select>
               </div>
             </div>
 
             <div className="dp-field">
-              <label htmlFor="b-note">Anything the doctor should know? <i>(optional)</i></label>
+              <label htmlFor="b-reason">Reason for the visit *</label>
+              <input id="b-reason" className="dp-input" name="reason" data-invalid={errors.reason ? 'true' : undefined}
+                value={form.reason} onChange={change} placeholder="e.g. toothache on the lower left since Monday" />
+              {errors.reason && <span className="dp-err">{errors.reason}</span>}
+            </div>
+
+            <div className="dp-field">
+              <label htmlFor="b-note">Anything else the doctor should know? <i>(optional)</i></label>
               <input id="b-note" className="dp-input" name="note" value={form.note} onChange={change} placeholder="e.g. sensitive to cold, taking antibiotics" />
             </div>
 

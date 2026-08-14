@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import initializeFirebase from './../Pages/Login/Firebase/firebase.init';
 import { isFirebaseConfigured } from './../Pages/Login/Firebase/firebase.config';
+import { API_BASE } from '../api/config';
 import {
   getAuth,
   createUserWithEmailAndPassword,
@@ -11,6 +12,7 @@ import {
   updateProfile,
   getIdToken,
   signOut,
+  sendPasswordResetEmail,
 } from 'firebase/auth';
 
 if (isFirebaseConfigured) initializeFirebase();
@@ -120,7 +122,7 @@ const useFirebase = () => {
       if (current) {
         setUser(current);
         getIdToken(current).then(setToken).catch(() => {});
-        fetch(`http://localhost:5000/users/${current.email}`)
+        fetch(`${API_BASE}/users/${current.email}`)
           .then((res) => res.json())
           .then((data) => setAdmin(Boolean(data.admin)))
           .catch(() => setAdmin(false));
@@ -132,6 +134,21 @@ const useFirebase = () => {
     });
     return () => unsubscribe();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  /* Password reset. The confirmation is identical whether or not the address exists,
+     so the form cannot be used to discover who has an account. */
+  const resetPassword = (email) => {
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
+      return Promise.reject(new Error('Please enter the email address you registered with.'));
+    }
+    if (!isFirebaseConfigured) {
+      return Promise.reject(new Error('Password reset needs Firebase — it is not available in demo mode.'));
+    }
+    return sendPasswordResetEmail(getAuth(), email).catch((err) => {
+      if (String(err && err.code).includes('user-not-found')) return;
+      throw new Error(String(err.message || err).replace('Firebase: ', ''));
+    });
+  };
 
   const logOut = () => {
     if (!isFirebaseConfigured) {
@@ -146,7 +163,7 @@ const useFirebase = () => {
   };
 
   const saveUser = (email, displayName, method) => {
-    fetch('http://localhost:5000/users', {
+    fetch(`${API_BASE}/users`, {
       method,
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({ email, displayName }),
@@ -156,6 +173,7 @@ const useFirebase = () => {
   return {
     user,
     admin,
+    resetPassword,
     token,
     isLoading,
     authError,
