@@ -15,6 +15,28 @@ import {
   sendPasswordResetEmail,
 } from 'firebase/auth';
 
+/* Who is an administrator once real Firebase auth is on. Firebase answers "who are you",
+   not "what may you do" — the role normally lives in the users collection
+   (GET /users/:email). Until that server is hosted this allowlist keeps the clinic
+   dashboard reachable; everyone else who registers is a patient. */
+const ADMIN_EMAILS = (process.env.REACT_APP_ADMIN_EMAILS || '')
+  .split(',').map((e) => e.trim().toLowerCase()).filter(Boolean);
+const isConfiguredAdmin = (email) => ADMIN_EMAILS.includes(String(email || '').toLowerCase());
+
+/* Raw codes like "Firebase: Error (auth/user-not-found)" are meaningless to a patient. */
+export const friendlyAuthError = (e) => {
+  const c = (e && (e.code || e.message)) || '';
+  if (c.includes('unauthorized-domain')) return "Google Sign-In isn't enabled for this domain yet — please use email & password.";
+  if (c.includes('invalid-api-key')) return 'Authentication is not configured for this deployment.';
+  if (c.includes('email-already-in-use')) return 'That email is already registered — try logging in instead.';
+  if (c.includes('weak-password')) return 'Please choose a password with at least 6 characters.';
+  if (c.includes('user-not-found') || c.includes('wrong-password') || c.includes('invalid-credential') || c.includes('invalid-login-credentials')) return 'Wrong email or password.';
+  if (c.includes('too-many-requests')) return 'Too many attempts — please wait a moment and try again.';
+  if (c.includes('popup-closed-by-user')) return 'Sign-in window closed before completing.';
+  if (c.includes('network-request-failed')) return 'Network problem — please check your connection.';
+  return (e && e.message) ? e.message.replace('Firebase: ', '') : 'Something went wrong.';
+};
+
 if (isFirebaseConfigured) initializeFirebase();
 
 /* DEMO MODE ------------------------------------------------------------------
@@ -71,7 +93,7 @@ const useFirebase = () => {
         updateProfile(auth.currentUser, { displayName: name }).catch(() => {});
         history.replace('/');
       })
-      .catch((error) => setAuthError(error.message))
+      .catch((error) => setAuthError(friendlyAuthError(error)))
       .finally(() => setIsLoading(false));
   };
 
@@ -88,7 +110,7 @@ const useFirebase = () => {
         history.replace(destination);
         setAuthError('');
       })
-      .catch((error) => setAuthError(error.message))
+      .catch((error) => setAuthError(friendlyAuthError(error)))
       .finally(() => setIsLoading(false));
   };
 
@@ -106,7 +128,7 @@ const useFirebase = () => {
         const destination = location?.state?.from || '/dashboard';
         history.replace(destination);
       })
-      .catch((error) => setAuthError(error.message))
+      .catch((error) => setAuthError(friendlyAuthError(error)))
       .finally(() => setIsLoading(false));
   };
 
@@ -124,8 +146,8 @@ const useFirebase = () => {
         getIdToken(current).then(setToken).catch(() => {});
         fetch(`${API_BASE}/users/${current.email}`)
           .then((res) => res.json())
-          .then((data) => setAdmin(Boolean(data.admin)))
-          .catch(() => setAdmin(false));
+          .then((data) => setAdmin(Boolean(data && data.admin) || isConfiguredAdmin(current.email)))
+          .catch(() => setAdmin(isConfiguredAdmin(current.email)));   // no server yet -> allowlist
       } else {
         setUser({});
         setAdmin(false);

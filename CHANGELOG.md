@@ -1,5 +1,17 @@
 # Changelog
 
+## [3.0.0] — 2026-08-14 — Real Firebase authentication, real roles
+### Added
+- **Firebase Auth is live** (project `doctors-portal-2b809`). Config lives in `.env`
+  (gitignored, inlined at build time). Random credentials are rejected — the demo bypass
+  where any email+password worked is gone.
+- **Patients are no longer administrators.** A new registration comes back as *Patient*
+  with no Messages / Make admin / Add doctor links. The admin flag comes from
+  `GET /users/:email` when the API is up, otherwise from `REACT_APP_ADMIN_EMAILS`.
+- `friendlyAuthError()` — "Wrong email or password." instead of
+  `Firebase: Error (auth/user-not-found)`.
+- `.env` also carries `REACT_APP_STRIPE_PK` (empty until the test key is added).
+
 ## [2.2.0] — 2026-08-14 — Eight fixes from the audit
 ### Added
 - **Stripe payments** (`src/Pages/DashBoard/Payment/Payment.js`): a Pay button on every
