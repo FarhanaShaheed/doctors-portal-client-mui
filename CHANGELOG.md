@@ -1,5 +1,15 @@
 # Changelog
 
+## [3.0.1] — 2026-08-20 — Dashboard calendar was invisible
+### Fixed
+- The clinic console renders `<MiniMonth dark />`, which adds `.is-dark`, but **no dark
+  rules had ever been written** — the day numbers kept `color: var(--ink)` (near-black) on
+  a near-black panel, so the whole grid was unreadable. Added the full dark variant:
+  day numbers, weekday heads, hover, today ring, selected day, availability dots, the
+  ‹ › buttons (they were white pills) and the footer links.
+- Those footer links also ran together as "TodayNext week"; the footer is now a flex row
+  with a gap.
+
 ## [3.0.0] — 2026-08-14 — Real Firebase authentication, real roles
 ### Added
 - **Firebase Auth is live** (project `doctors-portal-2b809`). Config lives in `.env`

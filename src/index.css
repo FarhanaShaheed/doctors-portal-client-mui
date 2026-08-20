@@ -972,3 +972,28 @@ select.dinput option { background: #10152c; color: var(--d-text); }
 .pay-done p{font-size:.88rem;line-height:1.7;color:#6b6a85;margin-bottom:16px}
 .pay-done code{background:#f1f0fa;padding:1px 6px;border-radius:5px}
 .pill.paid{background:#e7f7f0;color:#0f7a52}
+
+/* ============================================================
+   MiniMonth — DARK variant (clinic console).
+   The dashboard renders <MiniMonth dark />, which adds .is-dark, but no dark rules
+   existed: the day numbers kept `color: var(--ink)` (near-black) on a near-black panel,
+   so the whole grid was invisible except the greyed-out days.
+   ============================================================ */
+.sch-month.is-dark{color:#e9e9f5}
+.sch-month.is-dark .sch-month-top{color:#f2f2fb}
+.sch-month.is-dark .sch-month-heads span{color:#8f90ad}
+
+.sch-month.is-dark .sch-month-grid button{color:#dcdcec}
+.sch-month.is-dark .sch-month-grid button:hover:not(:disabled){background:rgba(124,108,255,.18);color:#c9c0ff}
+.sch-month.is-dark .sch-month-grid button:disabled{color:#4a4b63}          /* other months / past */
+.sch-month.is-dark .sch-month-grid button.is-on{background:var(--brand);color:#fff}
+.sch-month.is-dark .sch-month-grid button.is-today:not(.is-on){box-shadow:inset 0 0 0 1.5px rgba(124,108,255,.55);color:#fff}
+.sch-month.is-dark .sch-month-grid button.has-dot:after{background:#5ee2b0}
+
+/* the ‹ › buttons sat as white pills on the dark card */
+.sch-month.is-dark .sch-nav{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.14);color:#e9e9f5}
+.sch-month.is-dark .sch-nav:hover{border-color:var(--brand);color:#c9c0ff;background:rgba(124,108,255,.16)}
+
+.sch-month.is-dark .sch-month-foot{color:#8f90ad;display:flex;gap:14px;justify-content:center}
+.sch-month.is-dark .sch-linkbtn{color:#a99cff}
+.sch-month.is-dark .sch-linkbtn:hover{color:#fff;text-decoration:underline}
