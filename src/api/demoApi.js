@@ -156,22 +156,48 @@ const seedAppointments = async () => {
   return rows;
 };
 
+const auth = (token) => (token ? { authorization: `Bearer ${token}` } : {});
+
+/**
+ * The clinic's bookings.
+ * @param email  scope: return only this patient's bookings. Pass nothing only
+ *               for an administrator — the API enforces the same rule, and the
+ *               filter below repeats it so the offline/demo path cannot leak
+ *               one patient's schedule to another.
+ */
 export const getAppointments = async ({ email, token } = {}) => {
   const remote = await softFetch(
     `${API}/appointments${email ? `?email=${encodeURIComponent(email)}` : ''}`,
-    token ? { headers: { authorization: `Bearer ${token}` } } : undefined
+    { headers: auth(token) }
   );
-  if (Array.isArray(remote) && remote.length) return remote;
-  return seedAppointments();
+  const rows = Array.isArray(remote) && remote.length ? remote : await seedAppointments();
+  if (!email) return rows;
+  const mine = String(email).toLowerCase();
+  return rows.filter((a) => String(a.email || '').toLowerCase() === mine);
 };
 
-export const getMyAppointments = async (email) => {
-  const all = await getAppointments();
+/* Free/busy for the public booking grid: which slots are taken, never by whom.
+   The booking page used to pull the entire appointment list — names, emails and
+   phone numbers included — just to grey out a few buttons. */
+export const getAvailability = async () => {
+  const remote = await softFetch(`${API}/appointments/availability`);
+  const rows = Array.isArray(remote) && remote.length ? remote : await seedAppointments();
+  return rows.map((a) => ({
+    doctorId: a.doctorId,
+    doctor: a.doctor,
+    dateKey: a.dateKey,
+    startTime: a.startTime,
+    duration: a.duration,
+    status: a.status,
+  }));
+};
+
+export const getMyAppointments = async (email, token) => {
   if (!email) return [];
-  return all.filter((a) => (a.email || '').toLowerCase() === String(email).toLowerCase());
+  return getAppointments({ email, token });
 };
 
-export const createAppointment = async (appointment) => {
+export const createAppointment = async (appointment, token) => {
   const duration = Number(appointment.duration) || 30;
   const startTime = appointment.startTime || '09:00';
   const payload = {
@@ -187,7 +213,7 @@ export const createAppointment = async (appointment) => {
 
   const remote = await softFetch(`${API}/appointments`, {
     method: 'POST',
-    headers: { 'content-type': 'application/json' },
+    headers: { 'content-type': 'application/json', ...auth(token) },
     body: JSON.stringify(appointment),
   });
 
@@ -219,10 +245,10 @@ export const getDoctors = async () => {
   return seed;
 };
 
-export const createDoctor = async (doctor) => {
+export const createDoctor = async (doctor, token) => {
   await softFetch(`${API}/doctors`, {
     method: 'POST',
-    headers: { 'content-type': 'application/json' },
+    headers: { 'content-type': 'application/json', ...auth(token) },
     body: JSON.stringify(doctor),
   });
 
@@ -272,8 +298,8 @@ export const createDoctor = async (doctor) => {
 
 /* --------------------------------- users --------------------------------- */
 
-export const getUsers = async () => {
-  const remote = await softFetch(`${API}/users`);
+export const getUsers = async (token) => {
+  const remote = await softFetch(`${API}/users`, { headers: auth(token) });
   if (Array.isArray(remote) && remote.length) return remote;
   const seed = await loadSeed('users.json');
   const promoted = read(LS.admins, []);
@@ -300,10 +326,10 @@ export const makeAdmin = async (email, token) => {
    so the clinic dashboard has an inbox either way. */
 /* Marks an appointment paid. Real backend first (it stores the Stripe transaction
    against the booking); otherwise the local copy is updated so the receipt persists. */
-export const payAppointment = async (id, transactionId) => {
+export const payAppointment = async (id, transactionId, token) => {
   const patch = { paid: true, transactionId, paidAt: new Date().toISOString() };
   const remote = await softFetch(`${API}/appointments/${id}/payment`, {
-    method: 'PUT', headers: { 'content-type': 'application/json' }, body: JSON.stringify(patch),
+    method: 'PUT', headers: { 'content-type': 'application/json', ...auth(token) }, body: JSON.stringify(patch),
   });
   if (!remote) {
     write(LS.appointments, read(LS.appointments, []).map((a) => (String(a._id) === String(id) ? { ...a, ...patch } : a)));
@@ -311,8 +337,8 @@ export const payAppointment = async (id, transactionId) => {
   return patch;
 };
 
-export const getMessages = async () => {
-  const remote = await softFetch(`${API}/messages`);
+export const getMessages = async (token) => {
+  const remote = await softFetch(`${API}/messages`, { headers: auth(token) });
   if (Array.isArray(remote)) return remote;
   return read(LS.messages, []);
 };
@@ -326,16 +352,16 @@ export const createMessage = async (message) => {
   return record;
 };
 
-export const updateMessage = async (id, patch) => {
+export const updateMessage = async (id, patch, token) => {
   const remote = await softFetch(`${API}/messages/${id}`, {
-    method: 'PUT', headers: { 'content-type': 'application/json' }, body: JSON.stringify(patch),
+    method: 'PUT', headers: { 'content-type': 'application/json', ...auth(token) }, body: JSON.stringify(patch),
   });
   if (!remote) write(LS.messages, read(LS.messages, []).map((m) => (m._id === id ? { ...m, ...patch } : m)));
   return true;
 };
 
-export const deleteMessage = async (id) => {
-  const remote = await softFetch(`${API}/messages/${id}`, { method: 'DELETE' });
+export const deleteMessage = async (id, token) => {
+  const remote = await softFetch(`${API}/messages/${id}`, { method: 'DELETE', headers: auth(token) });
   if (!remote) write(LS.messages, read(LS.messages, []).filter((m) => m._id !== id));
   return true;
 };

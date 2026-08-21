@@ -89,21 +89,21 @@ const CardForm = ({ appointment, onPaid }) => {
 const Payment = () => {
   const { id } = useParams();
   const history = useHistory();
-  const { user } = useAuth();
+  const { user, token } = useAuth();
   const [appointment, setAppointment] = useState(null);
   const [loading, setLoading] = useState(true);
   const [receipt, setReceipt] = useState(null);
 
   useEffect(() => {
     if (!user?.email) return;
-    getMyAppointments(user.email).then((list) => {
+    getMyAppointments(user.email, token).then((list) => {
       setAppointment((list || []).find((a) => String(a._id) === String(id)) || null);
       setLoading(false);
     });
-  }, [user?.email, id]);
+  }, [user?.email, token, id]);
 
   const settle = async (transactionId) => {
-    await payAppointment(id, transactionId);
+    await payAppointment(id, transactionId, token);
     setReceipt(transactionId);
   };
 

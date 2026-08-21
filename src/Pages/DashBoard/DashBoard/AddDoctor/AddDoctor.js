@@ -1,6 +1,7 @@
 import React, { useContext, useState } from 'react';
 import { ClinicContext } from '../Dashboard';
 import useReveal from '../../../../hooks/useReveal';
+import useAuth from '../../../../hooks/useAuth';
 import { createDoctor } from '../../../../api/demoApi';
 import { IconCheck, IconPlus } from '../../../Shared/Icons/Icons';
 
@@ -17,6 +18,7 @@ const empty = { name: '', speciality: SPECIALITIES[0], email: '', phone: '', exp
 
 const AddDoctor = () => {
   const { doctors, reload } = useContext(ClinicContext);
+  const { token } = useAuth();
   const [form, setForm] = useState(empty);
   const [busy, setBusy] = useState(false);
   const [added, setAdded] = useState('');
@@ -28,7 +30,7 @@ const AddDoctor = () => {
   const submit = async (e) => {
     e.preventDefault();
     setBusy(true);
-    const created = await createDoctor({ ...form, experience: Number(form.experience) || 1 });
+    const created = await createDoctor({ ...form, experience: Number(form.experience) || 1 }, token);
     await reload();
     setBusy(false);
     setAdded(created.name);

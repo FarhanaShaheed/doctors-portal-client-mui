@@ -32,7 +32,10 @@ const Doctors = () => {
     <>
       <h1 className="dash-title">Doctors</h1>
       <p className="dash-lead">
-        {doctors.length} specialists on the rota. Booking load is calculated from the live schedule.
+        {doctors.length} specialists on the rota.{' '}
+        {admin
+          ? 'Booking load is calculated from the live schedule.'
+          : 'Pick any of them on the booking page — the counter is your own visits.'}
       </p>
 
       {admin && (
@@ -68,7 +71,7 @@ const Doctors = () => {
                 <div className="stats">
                   <div><b>{doc.experience || 1}y</b><span>Experience</span></div>
                   <div><b>{doc.rating || 5}★</b><span>Rating</span></div>
-                  <div><b>{booked}</b><span>Booked</span></div>
+                  <div><b>{booked}</b><span>{admin ? 'Booked' : 'Your visits'}</span></div>
                 </div>
               </article>
             );

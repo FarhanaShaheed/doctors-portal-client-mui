@@ -1,5 +1,6 @@
 import React, { useContext, useMemo, useState } from 'react';
 import { ClinicContext } from '../DashBoard/Dashboard';
+import PatientHome from './PatientHome';
 import MiniMonth from './../../Shared/MiniMonth/MiniMonth';
 import StatCard from '../components/StatCard';
 import AreaChart from '../components/AreaChart';
@@ -20,8 +21,10 @@ const matches = (row, q) => {
     .some((v) => String(v).toLowerCase().includes(needle));
 };
 
+/* The front desk's view of the clinic. A patient gets PatientHome instead —
+   same shell, their own record, none of anybody else's. */
 const DashBoardHome = () => {
-  const { appointments, doctors, users, loading, search } = useContext(ClinicContext);
+  const { appointments, doctors, users, loading, search, admin } = useContext(ClinicContext);
   const { user } = useAuth();
   const [date, setDate] = useState(new Date());
   const [scope, setScope] = useState('day');
@@ -47,6 +50,9 @@ const DashBoardHome = () => {
   }, [appointments, scope, selected, weekKeys, search]);
 
   useReveal([loading]);
+
+  // hooks above run for both roles, so this stays a plain branch
+  if (!admin) return <PatientHome />;
 
   if (loading) {
     return (

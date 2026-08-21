@@ -532,6 +532,8 @@ textarea.dp-input { resize: vertical; min-height: 110px; }
 }
 @media (max-width: 1000px) { .dash-burger { display: flex; } }
 .dash-search { position: relative; flex: 1; max-width: 420px; }
+/* holds the row open when the search box is not rendered (patients) */
+.dash-search-spacer { flex: 1; }
 .dash-search svg { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); color: #6b7395; }
 .dash-search input {
   width: 100%; background: rgba(255, 255, 255, .05); border: 1px solid var(--d-line); border-radius: 12px;
@@ -596,6 +598,21 @@ textarea.dp-input { resize: vertical; min-height: 110px; }
 .panel-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; margin-bottom: 18px; flex-wrap: wrap; }
 .panel-head h3 { font-size: 1.03rem; color: #fff; }
 .panel-head .sub { font-size: .8rem; color: var(--d-mute); margin-top: 3px; }
+/* "Your next visit" — the markup existed on My appointments from the start but
+   never had styles, so every label ran into its value ("ServiceTeeth Cleaning").
+   It is the patient's landing card now, so it gets a proper row of fields. */
+.next-visit-body {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(132px, 1fr));
+  gap: 16px 22px;
+}
+.next-visit-body > div { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
+.next-visit-body .lbl {
+  font-size: .72rem; text-transform: uppercase; letter-spacing: .1em;
+  color: var(--d-mute); font-weight: 700;
+}
+.next-visit-body b { font-size: .96rem; color: #fff; font-weight: 600; line-height: 1.35; }
+.next-visit { border-color: rgba(124, 58, 237, .34); }
+
 .dash-cols { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr); gap: 18px; margin-bottom: 22px; }
 @media (max-width: 1080px) { .dash-cols { grid-template-columns: minmax(0, 1fr); } }
 .dash-cols-2 { display: grid; grid-template-columns: 368px minmax(0, 1fr); gap: 18px; align-items: start; }

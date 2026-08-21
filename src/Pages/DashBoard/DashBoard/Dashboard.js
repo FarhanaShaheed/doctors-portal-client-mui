@@ -16,7 +16,7 @@ import {
   IconGrid, IconCalendar, IconStethoscope, IconShieldUser, IconPlus,
   IconSearch, IconMenu, IconTooth, IconLogout, IconArrow, IconCheck, IconMail } from '../../Shared/Icons/Icons';
 
-export const ClinicContext = createContext({ appointments: [], doctors: [], users: [], loading: true, reload: () => {}, search: '' });
+export const ClinicContext = createContext({ appointments: [], doctors: [], users: [], loading: true, reload: () => {}, search: '', admin: false });
 
 const initialsOf = (user) => {
   const source = user?.displayName || user?.email || '';
@@ -27,8 +27,15 @@ const initialsOf = (user) => {
 function Dashboard() {
   const { path, url } = useRouteMatch();
   const location = useLocation();
-  const { user, admin, logOut, demoMode } = useAuth();
-  const clinic = useClinicData();
+  const { user, admin, roleLoading, token, logOut, demoMode } = useAuth();
+  /* Nothing loads until we know who this is: an administrator loads the clinic,
+     a patient loads only their own bookings. */
+  const clinic = useClinicData({
+    email: user?.email,
+    admin,
+    token,
+    ready: Boolean(user?.email) && !roleLoading,
+  });
 
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState('');
@@ -38,18 +45,20 @@ function Dashboard() {
 
   const links = [
     { to: url, exact: true, label: 'Overview', icon: <IconGrid size={19} /> },
-    { to: `${url}/appointments`, label: 'Appointments', icon: <IconCalendar size={19} /> },
     { to: `${url}/my-appointments`, label: 'My appointments', icon: <IconCheck size={19} /> },
     { to: `${url}/doctors`, label: 'Doctors', icon: <IconStethoscope size={19} /> },
   ];
+  /* The whole clinic's schedule belongs here, with the rest of the front-desk
+     tools — a patient has no business seeing who else is booked in. */
   const adminLinks = [
+    { to: `${url}/appointments`, label: 'All appointments', icon: <IconCalendar size={19} /> },
     { to: `${url}/messages`, label: 'Messages', icon: <IconMail size={19} /> },
     { to: `${url}/makeAdmin`, label: 'Make admin', icon: <IconShieldUser size={19} /> },
     { to: `${url}/addDoctor`, label: 'Add doctor', icon: <IconPlus size={19} /> },
   ];
 
   return (
-    <ClinicContext.Provider value={{ ...clinic, search }}>
+    <ClinicContext.Provider value={{ ...clinic, search, admin }}>
       <div className="dash">
         {open && <div className="dash-scrim" onClick={() => setOpen(false)} />}
 
@@ -104,16 +113,19 @@ function Dashboard() {
               <IconMenu size={20} />
             </button>
 
-            <div className="dash-search">
-              <IconSearch size={17} />
-              <input
-                type="search"
-                placeholder="Search patients, services or doctors…"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                aria-label="Search the clinic"
-              />
-            </div>
+            {/* searches the clinic's records, so it belongs to the front desk */}
+            {admin ? (
+              <div className="dash-search">
+                <IconSearch size={17} />
+                <input
+                  type="search"
+                  placeholder="Search patients, services or doctors…"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  aria-label="Search the clinic"
+                />
+              </div>
+            ) : <div className="dash-search-spacer" />}
 
             <div className="dash-top-right">
               {demoMode && (
@@ -134,7 +146,7 @@ function Dashboard() {
           <div className="dash-body">
             <Switch>
               <Route exact path={path}><DashBoardHome /></Route>
-              <Route path={`${path}/appointments`}><Appointments /></Route>
+              <AdminRoute path={`${path}/appointments`}><Appointments /></AdminRoute>
               <Route path={`${path}/my-appointments`}><MyAppointments /></Route>
               <Route path={`${path}/payment/:id`}><Payment /></Route>
               <Route path={`${path}/doctors`}><Doctors /></Route>

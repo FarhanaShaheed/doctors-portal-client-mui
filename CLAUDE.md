@@ -36,6 +36,26 @@ NODE_OPTIONS=--openssl-legacy-provider npm start
 **To go real:** set `REACT_APP_FIREBASE_*` env vars (and `REACT_APP_API_BASE` for a hosted
 API) and redeploy — the code switches over automatically, no edits needed.
 
+## Who sees what (read before touching the dashboard)
+The console serves two roles off one shell, and the split is enforced in three places —
+change one and change all three:
+1. **The request** — `useClinicData({ email, admin, token, ready })` asks for
+   `?email=<signed-in address>` unless the caller is an administrator, and skips the user
+   list entirely for patients.
+2. **The response** — `getAppointments({ email })` filters whatever comes back, including
+   the offline/seed fallback, so a failed API call cannot fall back into a data leak.
+3. **The API** — the server verifies the Firebase ID token and applies the same rule
+   server-side; a patient asking for `?email=someone.else` still gets their own rows.
+
+Patients get `PatientHome` as their Overview, `MyAppointments`, and the Doctors rota.
+Everything clinic-wide (All appointments, Messages, Make admin, Add doctor) sits under
+**Administration** behind `AdminRoute`, which waits for `roleLoading` — the session
+resolves one round-trip before the role does. `admin` is on `ClinicContext` for pages
+that need to word things differently.
+
+**Never render clinic-wide data on a page a patient can reach**, and never add an API call
+to the dashboard without passing `token` — the API rejects unsigned admin requests.
+
 ## Scheduling system (the centrepiece)
 `src/Pages/Appointment/` + `src/api/schedule.js`. Doctor rail (search + specialty filter,
 "next available" badges) → week strip (‹ › navigation, per-day slot counts, Full/past

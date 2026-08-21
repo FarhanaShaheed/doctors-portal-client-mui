@@ -4,11 +4,13 @@ import DoctorAvatar from '../../Shared/DoctorAvatar/DoctorAvatar';
 import { IconCheck, IconArrow, IconClock, IconCalendar, IconPin } from '../../Shared/Icons/Icons';
 import { durationLabel, money, timeRange, to12h } from '../../../api/schedule';
 import { prettyDate, createAppointment, dateKey } from '../../../api/demoApi';
+import useAuth from '../../../hooks/useAuth';
 
 /* Confirmation dialog: review → confirm → success, all in place.
    Logged-out visitors get the "log in and come back" state instead of the
    form, so nothing is lost when they return. */
 const BookingModal = ({ doctor, date, service, slot, user, onClose, onBooked }) => {
+  const { token } = useAuth();   // signs the booking so it lands on the right account
   const [step, setStep] = useState(user?.email ? 'review' : 'login');
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(null);
@@ -98,7 +100,7 @@ const BookingModal = ({ doctor, date, service, slot, user, onClose, onBooked }) 
       date: date.toLocaleDateString(),
       dateKey: dateKey(date),
     };
-    const result = await createAppointment(appointment);
+    const result = await createAppointment(appointment, token);
     setSaving(false);
     setSaved(result.appointment);
     setStep('done');

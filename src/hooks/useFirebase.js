@@ -62,6 +62,10 @@ const useFirebase = () => {
   const [authError, setAuthError] = useState('');
   const [admin, setAdmin] = useState(false);
   const [token, setToken] = useState('');
+  /* Role arrives one round-trip after the session does. Screens that show
+     different data to a patient and to the front desk wait for this, otherwise
+     an administrator would flash the patient view on every reload. */
+  const [roleLoading, setRoleLoading] = useState(true);
 
   // Never call getAuth() without an initialised app — it throws.
   const auth = isFirebaseConfigured ? getAuth() : null;
@@ -138,19 +142,30 @@ const useFirebase = () => {
       const stored = demoRead();
       if (stored) { setUser(stored); setAdmin(true); setToken('demo-token'); }
       setIsLoading(false);
+      setRoleLoading(false);
       return undefined;
     }
     const unsubscribe = onAuthStateChanged(auth, (current) => {
       if (current) {
         setUser(current);
-        getIdToken(current).then(setToken).catch(() => {});
-        fetch(`${API_BASE}/users/${current.email}`)
-          .then((res) => res.json())
+        setRoleLoading(true);
+        /* The role comes from the API, which will only answer for the account the
+           token belongs to — so the token has to go with the question. */
+        getIdToken(current)
+          .then((fresh) => {
+            setToken(fresh);
+            return fetch(`${API_BASE}/users/${encodeURIComponent(current.email)}`, {
+              headers: { authorization: `Bearer ${fresh}` },
+            }).then((res) => (res.ok ? res.json() : null));
+          })
           .then((data) => setAdmin(Boolean(data && data.admin) || isConfiguredAdmin(current.email)))
-          .catch(() => setAdmin(isConfiguredAdmin(current.email)));   // no server yet -> allowlist
+          .catch(() => setAdmin(isConfiguredAdmin(current.email)))   // API unreachable -> allowlist
+          .finally(() => setRoleLoading(false));
       } else {
         setUser({});
         setAdmin(false);
+        setToken('');
+        setRoleLoading(false);
       }
       setIsLoading(false);
     });
@@ -195,6 +210,7 @@ const useFirebase = () => {
   return {
     user,
     admin,
+    roleLoading,
     resetPassword,
     token,
     isLoading,

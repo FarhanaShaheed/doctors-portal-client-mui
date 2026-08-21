@@ -1,30 +1,34 @@
 import React, { useEffect, useState } from 'react';
 import { getMessages, updateMessage, deleteMessage } from '../../../api/demoApi';
 import { CLINIC } from '../../../api/config';
+import useAuth from '../../../hooks/useAuth';
 import { IconMail, IconCheck } from '../../Shared/Icons/Icons';
 
 /* Front-desk inbox. Enquiries from the home page used to be discarded on submit —
    nothing was stored and no screen existed to read them. Admin-only. */
 
 const Messages = () => {
+  const { token } = useAuth();
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(null);
   const [reply, setReply] = useState('');
 
+  // the inbox is admin-only on the API too, so the request has to be signed
   useEffect(() => {
-    getMessages().then((m) => { setMessages(Array.isArray(m) ? m : []); setLoading(false); });
-  }, []);
+    if (!token) return;
+    getMessages(token).then((m) => { setMessages(Array.isArray(m) ? m : []); setLoading(false); });
+  }, [token]);
 
   const markReplied = async (m, text) => {
-    await updateMessage(m._id, { status: 'replied', reply: text });
+    await updateMessage(m._id, { status: 'replied', reply: text }, token);
     setMessages((list) => list.map((x) => (x._id === m._id ? { ...x, status: 'replied', reply: text } : x)));
     setOpen(null); setReply('');
   };
 
   const remove = async (m) => {
     if (!window.confirm('Delete this message?')) return;
-    await deleteMessage(m._id);
+    await deleteMessage(m._id, token);
     setMessages((list) => list.filter((x) => x._id !== m._id));
   };
 

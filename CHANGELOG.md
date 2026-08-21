@@ -1,5 +1,35 @@
 # Changelog
 
+## [3.1.0] — 2026-08-21 — A patient sees their own record, not the clinic's
+### Security
+- **The dashboard showed every booking in the clinic to whoever was logged in.** A patient
+  opening `/dashboard/appointments` got all 32 appointments — other people's names, email
+  addresses and phone numbers — and the Overview page put the same table on the landing
+  screen. The request is now scoped before it is sent (`?email=` the signed-in address),
+  the API enforces the same rule, and `getAppointments()` filters whatever comes back, so
+  the demo/offline path cannot leak either.
+- `/dashboard/appointments` is an `AdminRoute` and lives under **Administration** as
+  *All appointments*; typing the URL directly redirects a patient back to their overview.
+- `AdminRoute` now waits for `roleLoading` as well as `isLoading` — the session resolves a
+  round-trip before the role does, and without the wait an administrator opening an admin
+  page directly was bounced out as a patient.
+- Every admin call carries the Firebase ID token (inbox, add doctor, promote, pay), because
+  the API rejects unsigned ones.
+- The booking page reads `getAvailability()` — times only. It used to download every
+  patient's record to grey out taken slots.
+### Added
+- **`PatientHome`** — the Overview a patient gets: their upcoming/past visits, fees, their
+  next appointment, a calendar dotted with their own dates, and everything they have booked.
+  The clinic-wide Overview is unchanged for the front desk.
+### Fixed
+- **"Your next visit" had no styles at all.** The markup shipped with My appointments and
+  every label ran into its value — "ServiceTeeth Cleaning", "DoctorDr. Ayesha Rahman".
+  Labels now sit above their values.
+- The header search box searches clinic records, so it is hidden from patients instead of
+  sitting there doing nothing.
+- The Doctors page labels its counter *Your visits* for a patient (it counts their own
+  bookings) and *Booked* for the front desk.
+
 ## [3.0.1] — 2026-08-20 — Dashboard calendar was invisible
 ### Fixed
 - The clinic console renders `<MiniMonth dark />`, which adds `.is-dark`, but **no dark

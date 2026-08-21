@@ -10,7 +10,7 @@ import SummaryPanel from '../components/SummaryPanel';
 import BookingModal from '../components/BookingModal';
 
 import useAuth from '../../../hooks/useAuth';
-import { getDoctors, getAppointments, prettyDate, addDays, dateKey } from '../../../api/demoApi';
+import { getDoctors, getAvailability, prettyDate, addDays, dateKey } from '../../../api/demoApi';
 import {
   startOfDay, startOfWeek, weekDates, isSameDay, isPastDay,
   servicesOf, daySlots, openSlots, groupByPeriod, availabilityOn,
@@ -44,8 +44,9 @@ const Appointment = () => {
 
   /* ------------------------------- data ---------------------------------- */
 
+  /* Free/busy only — the grid needs to know which slots are taken, never by whom. */
   const load = useCallback(async () => {
-    const [d, a] = await Promise.all([getDoctors(), getAppointments()]);
+    const [d, a] = await Promise.all([getDoctors(), getAvailability()]);
     setDoctors(Array.isArray(d) ? d : []);
     setAppointments(Array.isArray(a) ? a : []);
     setLoading(false);
@@ -174,7 +175,7 @@ const Appointment = () => {
   const handleBooked = async (appointment) => {
     bookedRef.current = true;
     setConfirmed(appointment);
-    const fresh = await getAppointments();
+    const fresh = await getAvailability();
     setAppointments(Array.isArray(fresh) ? fresh : []);
   };
 

@@ -21,3 +21,4 @@ yarn-error.log*
 
 # local secrets (Firebase web config)
 .env
+.env*
